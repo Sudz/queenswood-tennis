@@ -1,4 +1,4 @@
-# Queenswood Tennis & Pickleball - Elite 2026 Platform 🎾⚡
+# Queenswood Tennis & Pickleball club 🎾⚡
 
 Welcome to the future of racket sports. Queenswood is a state-of-the-art digital facility designed for the "Elite 2026" season, featuring immersive motion, advanced analytics, and integrated secure payments.
 
