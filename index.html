@@ -238,6 +238,56 @@
             opacity: 0;
         }
 
+        /* Final Pitch Polish Styles */
+        .scanline-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.2;
+        }
+
+        @keyframes particle-burst {
+            0% {
+                transform: scale(1) translate(-50%, -50%);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(4) translate(var(--tx), var(--ty));
+                opacity: 0;
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #a3e635;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 50;
+            animation: particle-burst 0.8s cubic-bezier(0, 0, 0.2, 1) forwards;
+        }
+
+        .stagger-link {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .mobile-menu-overlay.open .stagger-link {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .magnetic-wrap {
+            display: inline-block;
+            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
         /* Scroll Reveal System */
         .reveal {
             opacity: 0;
@@ -338,6 +388,7 @@
             const [selectedDate, setSelectedDate] = useState(null);
             const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
             const [isProfileOpen, setIsProfileOpen] = useState(false);
+            const [currentTime, setCurrentTime] = useState(new Date());
             const [liveStats, setLiveStats] = useState({ activePlayers: 12, nextEvent: 'Mixed Social @ 18:00', weather: '24°C Sunny' });
             const [leaderboard, setLeaderboard] = useState([
                 { rank: 1, name: 'Alex M.', rating: '7.82', change: '+2' },
@@ -356,6 +407,11 @@
             });
             const videoRefs = useRef({});
             const cursorRef = useRef(null);
+
+            useEffect(() => {
+                const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+                return () => clearInterval(timer);
+            }, []);
 
             useEffect(() => {
                 const handleScroll = () => {
@@ -434,6 +490,35 @@
                 return isLoggedIn ? basePrice * 0.85 : basePrice; // 15% discount for members
             };
 
+            const createParticles = (e) => {
+                const container = e.currentTarget;
+                for (let i = 0; i < 12; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    const x = Math.random() * 100 - 50;
+                    const y = Math.random() * 100 - 50;
+                    particle.style.setProperty('--tx', `${x}px`);
+                    particle.style.setProperty('--ty', `${y}px`);
+                    particle.style.left = '50%';
+                    particle.style.top = '50%';
+                    particle.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+                    container.appendChild(particle);
+                    setTimeout(() => particle.remove(), 1000);
+                }
+            };
+
+            const handleMagnetic = (e) => {
+                const btn = e.currentTarget;
+                const rect = btn.getBoundingClientRect();
+                const x = (e.clientX - rect.left - rect.width / 2) * 0.4;
+                const y = (e.clientY - rect.top - rect.height / 2) * 0.4;
+                btn.style.transform = `translate(${x}px, ${y}px)`;
+            };
+
+            const resetMagnetic = (e) => {
+                e.currentTarget.style.transform = `translate(0, 0)`;
+            };
+
             const renderAnimatedText = (text, type = 'strike', delayOffset = 0) => {
                 const className = type === 'toss' ? 'toss-letter' : type === 'smash' ? 'smash-letter' : 'strike-letter';
                 return text.split('').map((char, i) => (
@@ -464,16 +549,17 @@
                             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                         <div className="h-full flex flex-col items-center justify-center gap-8">
-                            <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black uppercase tracking-tighter hover:text-lime-400 transition-colors">About</a>
-                            <a href="#membership" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black uppercase tracking-tighter hover:text-lime-400 transition-colors">Membership</a>
-                            <a href="#booking" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black uppercase tracking-tighter hover:text-lime-400 transition-colors">Book Court</a>
-                            <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black uppercase tracking-tighter text-lime-400">Pickleball Hub</a>
+                            <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="stagger-link text-4xl font-black uppercase tracking-tighter hover:text-lime-400 transition-colors" style={{ transitionDelay: '0.1s' }}>About</a>
+                            <a href="#membership" onClick={() => setIsMobileMenuOpen(false)} className="stagger-link text-4xl font-black uppercase tracking-tighter hover:text-lime-400 transition-colors" style={{ transitionDelay: '0.2s' }}>Membership</a>
+                            <a href="#booking" onClick={() => setIsMobileMenuOpen(false)} className="stagger-link text-4xl font-black uppercase tracking-tighter hover:text-lime-400 transition-colors" style={{ transitionDelay: '0.3s' }}>Book Court</a>
+                            <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="stagger-link text-4xl font-black uppercase tracking-tighter text-lime-400" style={{ transitionDelay: '0.4s' }}>Pickleball Hub</a>
                             <button
                                 onClick={() => {
                                     setIsLoggedIn(true);
                                     setIsMobileMenuOpen(false);
                                 }}
-                                className="mt-8 bg-white text-black px-12 py-4 rounded-full font-black text-sm uppercase tracking-widest"
+                                className="stagger-link mt-8 bg-white text-black px-12 py-4 rounded-full font-black text-sm uppercase tracking-widest"
+                                style={{ transitionDelay: '0.5s' }}
                             >
                                 {isLoggedIn ? 'Go to Q-Hub' : 'Member Login'}
                             </button>
@@ -647,7 +733,14 @@
                                     </p>
 
                                     <div className="flex flex-wrap gap-6 items-center">
-                                        <a href="#booking" className="bg-lime-400 text-black px-12 py-6 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-2xl shadow-lime-400/20 active:scale-95">Book Now</a>
+                                        <a
+                                            href="#booking"
+                                            onMouseMove={handleMagnetic}
+                                            onMouseLeave={resetMagnetic}
+                                            className="bg-lime-400 text-black px-12 py-6 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-2xl shadow-lime-400/20 active:scale-95 magnetic-wrap"
+                                        >
+                                            Book Now
+                                        </a>
                                         <div className="flex gap-2 p-2 bg-white/5 rounded-[2rem] border border-white/10 backdrop-blur-2xl">
                                             {SPORTS.map(sport => (
                                                 <button
@@ -668,10 +761,11 @@
                                 {/* Right Side: Q-Pro Profile Card (Tilted) */}
                                 <div className="perspective-1000 mt-16 lg:mt-0">
                                     <div
-                                        className="tilt-card bg-white/5 backdrop-blur-3xl rounded-[3.5rem] p-12 border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] relative group cursor-pointer"
+                                        className="tilt-card bg-white/5 backdrop-blur-3xl rounded-[3.5rem] p-12 border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] relative group cursor-pointer overflow-hidden"
                                         style={{ transform: `rotateY(${heroTilt.x}deg) rotateX(${heroTilt.y}deg)` }}
                                     >
-                                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-lime-400 rounded-t-full"></div>
+                                        <div className="scanline-overlay"></div>
+                                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-lime-400 rounded-t-full z-10"></div>
 
                                         <div className="flex justify-between items-start mb-12">
                                             <div className="flex items-center gap-4">
@@ -794,11 +888,14 @@
                                         src="https://player.vimeo.com/external/370331493.sd.mp4?s=7b23158f94e69da598bc36028f892a08832a8a81&profile_id=139&oauth2_token_id=57447761"
                                         muted loop playsInline autoPlay
                                     />
-                                    <div className="absolute top-0 right-0 p-6">
-                                        <div className="flex items-center gap-2 px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full">
+                                    <div className="absolute top-0 right-0 p-6 z-10 text-right">
+                                        <div className="flex items-center justify-end gap-2 px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full mb-2">
                                             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
                                             <span className="text-[8px] font-black uppercase tracking-widest text-red-500">Live</span>
                                         </div>
+                                        <p className="text-[10px] font-black text-white/40 tracking-widest tabular-nums">
+                                            PTA: {currentTime.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
+                                        </p>
                                     </div>
                                     <div>
                                         <h4 className="text-lg font-black uppercase tracking-widest text-white/40 mb-2">Club Status</h4>
@@ -1147,9 +1244,9 @@
                                                     <p className="text-slate-500 mt-4 text-[10px] font-black uppercase tracking-[0.2em]">Please do not refresh your browser</p>
                                                 </div>
                                             ) : (
-                                                <div className="flex flex-col items-center">
-                                                    <div className="w-20 h-20 bg-lime-400 rounded-full flex items-center justify-center text-black text-4xl mb-8 animate-bounce">✓</div>
-                                                    <h3 className="text-4xl font-black uppercase tracking-tighter italic mb-4">Payment Successful</h3>
+                                                <div className="flex flex-col items-center relative" onMouseEnter={createParticles}>
+                                                    <div className="w-20 h-20 bg-lime-400 rounded-full flex items-center justify-center text-black text-4xl mb-8 animate-bounce relative z-10">✓</div>
+                                                    <h3 className="text-4xl font-black uppercase tracking-tighter italic mb-4 relative z-10">Payment Successful</h3>
                                                     <p className="text-slate-400 text-lg mb-10">Your court is locked and loaded. See you on the court!</p>
                                                     <button onClick={() => { setBookingStep('time'); setCheckoutStatus(null); setSelectedTime(null); setSelectedCourt(null); }} className="bg-white text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all">Back to Home</button>
                                                 </div>
