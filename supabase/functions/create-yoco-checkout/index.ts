@@ -16,7 +16,10 @@ serve(async (req) => {
   }
 
   try {
-    const { court, time, sport, userId, userEmail } = await req.json()
+    const { court, time, date, sport, userId, userEmail, amount } = await req.json()
+
+    // Default amount to 15000 (R150) if not provided, for backward compatibility
+    const paymentAmount = amount || 15000;
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
@@ -28,11 +31,12 @@ serve(async (req) => {
           court_id: court.id,
           court_name: court.name,
           booking_time: time,
+          booking_date: date,
           sport: sport,
           user_id: userId,
           user_email: userEmail,
           payment_status: 'pending',
-          amount: 15000, // R150.00 in cents
+          amount: paymentAmount,
           currency: 'ZAR'
         }
       ])
@@ -49,7 +53,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        amount: 15000,
+        amount: paymentAmount,
         currency: 'ZAR',
         externalId: booking.id.toString(),
         successUrl: `https://${req.headers.get('host')}/queenswood-tennis?status=success&bookingId=${booking.id}`,
@@ -58,7 +62,8 @@ serve(async (req) => {
         metadata: {
           bookingId: booking.id,
           court: court.name,
-          time: time
+          time: time,
+          date: date
         }
       }),
     })
