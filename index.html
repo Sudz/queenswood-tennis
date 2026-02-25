@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en-ZA">
 
 <head>
@@ -372,6 +372,139 @@
             { id: 4, name: 'Court 4', type: 'multi', features: ['Floodlights', 'Hard Court', 'Pickleball Lines'] },
             { id: 5, name: 'Court 5', type: 'multi', features: ['Floodlights', 'Hard Court', 'Pickleball Lines'] }
         ];
+
+        // ── Registration Form Component ────────────────────────────────────────────
+        function RegistrationForm({ regMode, setRegMode }) {
+            const PLANS = [
+                { key: 'adult',   label: 'Adult Pro',  monthly: 150, annual: 120 },
+                { key: 'masters', label: 'Masters',    monthly: 120, annual:  95 },
+                { key: 'junior',  label: 'Junior Ace', monthly:  75, annual:  60 },
+            ];
+            const [selPlan,    setSelPlan]    = React.useState('adult');
+            const [selBilling, setSelBilling] = React.useState('monthly');
+            const [loading,    setLoading]    = React.useState(false);
+
+            const activePlan  = PLANS.find(p => p.key === selPlan);
+            const monthlyFee  = selBilling === 'annual' ? activePlan.annual : activePlan.monthly;
+            const firstTotal  = monthlyFee + 90;
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                const fd = new FormData(e.target);
+                const payload = {
+                    plan:         regMode === 'league' ? 'league' : selPlan,
+                    billingCycle: selBilling,
+                    fullName:     fd.get('fullName'),
+                    email:        fd.get('email'),
+                    whatsapp:     fd.get('whatsapp'),
+                    utrDupr:      fd.get('utrDupr') || null,
+                };
+                try {
+                    const res  = await fetch('https://SJR_SUPABASE_ID.supabase.co/functions/v1/create-membership-checkout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                    });
+                    const data = await res.json();
+                    if (data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else if (data.success) {
+                        alert("League registration confirmed! We'll WhatsApp you the details.");
+                        setRegMode(null);
+                    } else {
+                        alert('Error: ' + (data.error || 'Something went wrong.'));
+                    }
+                } catch (err) {
+                    alert('Network error. Please try again.');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            return (
+                <form className="space-y-5" onSubmit={handleSubmit}>
+                    {/* Personal details */}
+                    <div>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Full Name</label>
+                        <input name="fullName" type="text" required placeholder="John Doe"
+                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all placeholder:text-white/10" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Email</label>
+                            <input name="email" type="email" required placeholder="john@example.com"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all placeholder:text-white/10" />
+                        </div>
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">WhatsApp</label>
+                            <input name="whatsapp" type="tel" required placeholder="+27 …"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all placeholder:text-white/10" />
+                        </div>
+                    </div>
+
+                    {/* Plan-specific section */}
+                    {regMode === 'membership' ? (
+                        <>
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3 block">Select Plan</label>
+                                <div className="grid grid-cols-3 gap-3">
+                                    {PLANS.map(p => (
+                                        <button key={p.key} type="button" onClick={() => setSelPlan(p.key)}
+                                            className={py-4 px-3 rounded-2xl border font-black text-[10px] uppercase tracking-wider transition-all }>
+                                            {p.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3 block">Billing Cycle</label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {['monthly', 'annual'].map(b => (
+                                        <button key={b} type="button" onClick={() => setSelBilling(b)}
+                                            className={py-4 rounded-2xl border font-black text-[10px] uppercase tracking-wider transition-all }>
+                                            {b}{b === 'annual' ? ' (Save 20%)' : ''}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            {/* Live price breakdown */}
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3">
+                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    <span>{activePlan.label} ({selBilling})</span>
+                                    <span>R{monthlyFee}/mo</span>
+                                </div>
+                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    <span>Once-off joining fee</span><span>R90</span>
+                                </div>
+                                <div className="border-t border-white/10 pt-3 flex justify-between font-black uppercase tracking-widest">
+                                    <span className="text-xs">Due today via Yoco</span>
+                                    <span className="text-lime-400 text-lg">R{firstTotal}</span>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">UTR / DUPR Rating</label>
+                                <input name="utrDupr" type="text" placeholder="e.g. 6.5"
+                                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all placeholder:text-white/10" />
+                            </div>
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex justify-between items-center">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Queenswood League Entry</span>
+                                <span className="text-lime-400 font-black text-lg">Free*</span>
+                            </div>
+                            <p className="text-slate-600 text-[9px] font-black uppercase tracking-widest">* Match fees apply per round</p>
+                        </>
+                    )}
+
+                    <button type="submit" disabled={loading}
+                        className="w-full bg-lime-400 text-black py-5 rounded-3xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-2xl shadow-lime-400/20 disabled:opacity-60">
+                        {loading ? 'Processing…' : (regMode === 'membership' ? 'Pay & Register via Yoco →' : 'Submit Registration →')}
+                    </button>
+                </form>
+            );
+        }
 
         function App() {
             const [activeSport, setActiveSport] = useState('Pickleball');
@@ -1344,44 +1477,17 @@
                     </footer >
                     {/* Registration Modal Engine */}
                     {regMode && (
-                        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-xl animate-modern">
-                            <div className="bg-slate-900 w-full max-w-xl rounded-[3rem] border border-white/10 p-12 relative shadow-2xl">
+                        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-modern">
+                            <div className="bg-slate-900 w-full max-w-xl rounded-[3rem] border border-white/10 p-10 relative shadow-2xl max-h-[95vh] overflow-y-auto no-scrollbar">
                                 <button onClick={() => setRegMode(null)} className="absolute top-8 right-8 text-slate-500 hover:text-white transition-colors">
                                     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                 </button>
-                                <h3 className="text-4xl font-black uppercase italic tracking-tighter mb-4 text-lime-400">{regMode === 'membership' ? 'Elevate Your Game' : 'Join the League'}</h3>
-                                <p className="text-slate-400 text-sm mb-10 uppercase tracking-widest font-black">Official Queenswood {regMode === 'membership' ? 'Membership' : 'League'} Registration</p>
-
-                                <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); alert('Registration Sent!'); setRegMode(null); }}>
-                                    <div>
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Full Name</label>
-                                        <input type="text" required placeholder="John Doe" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all placeholder:text-white/10" />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-6">
-                                        <div>
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Email Node</label>
-                                            <input type="email" required placeholder="john@example.com" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all placeholder:text-white/10" />
-                                        </div>
-                                        <div>
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">WhatsApp Node</label>
-                                            <input type="tel" required placeholder="+27 ..." className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all placeholder:text-white/10" />
-                                        </div>
-                                    </div>
-                                    {regMode === 'membership' ? (
-                                        <div>
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Select Plan</label>
-                                            <select className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all appearance-none cursor-pointer">
-                                                <option>Club Member (R350/mo)</option>
-                                                <option>Elite Pro (R850/mo)</option>
-                                                <option>Junior Ace (R150/mo)</option>
-                                            </select>
-                                        </div>
-                                    ) : (
-                                        <div>
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">UTR/DUPR Rating</label>
-                                            <input type="text" placeholder="e.g. 6.5" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all placeholder:text-white/10" />
-                                        </div>
-                                    )}
+                                <h3 className="text-4xl font-black uppercase italic tracking-tighter mb-2 text-lime-400">{regMode === 'membership' ? 'Elevate Your Game' : 'Join the League'}</h3>
+                                <p className="text-slate-400 text-[10px] mb-8 uppercase tracking-widest font-black">Official Queenswood {regMode === 'membership' ? 'Membership' : 'League'} Registration</p>
+                                <RegistrationForm regMode={regMode} setRegMode={setRegMode} />
+                            </div>
+                        </div>
+                    )}
                                     <button type="submit" className="w-full bg-lime-400 text-black py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-2xl shadow-lime-400/20">Submit Registration →</button>
                                 </form>
                             </div>
