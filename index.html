@@ -523,17 +523,44 @@
             const [isProfileOpen, setIsProfileOpen] = useState(false);
             const [currentTime, setCurrentTime] = useState(new Date());
             const [liveStats, setLiveStats] = useState({ activePlayers: 12, nextEvent: 'Mixed Social @ 18:00', weather: '24°C Sunny' });
-            const [leaderboard, setLeaderboard] = useState([
-                { rank: 1, name: 'Alex M.', rating: '7.82', change: '+2' },
-                { rank: 2, name: 'Sarah J.', rating: '7.45', change: '-1' },
-                { rank: 3, name: 'Mike R.', rating: '7.12', change: '0' },
-                { rank: 4, name: 'Xander V.', rating: '7.08', change: '+3' },
-                { rank: 5, name: 'Lena K.', rating: '6.95', change: '+1' },
-                { rank: 6, name: 'David W.', rating: '6.82', change: '-2' },
-                { rank: 7, name: 'Elena S.', rating: '6.74', change: '0' },
-                { rank: 8, name: 'Chris P.', rating: '6.65', change: '+4' },
-                { rank: 9, name: 'Julia T.', rating: '6.52', change: '-1' },
-                { rank: 10, name: 'Mark B.', rating: '6.45', change: '+2' }
+            const [leaderboard] = useState({
+                mens: [
+                    { rank: 1, name: 'Xander van Zyl',  rating: '7.82', change: '+2', sport: 'tennis' },
+                    { rank: 2, name: 'Brendan Louw',    rating: '7.65', change: '+1', sport: 'tennis' },
+                    { rank: 3, name: 'Marco Ferreira',  rating: '7.44', change: '0',  sport: 'tennis' },
+                    { rank: 4, name: 'Jaco Pretorius',  rating: '7.21', change: '-1', sport: 'tennis' },
+                    { rank: 5, name: 'Keanu Dlamini',   rating: '7.08', change: '+3', sport: 'tennis' },
+                    { rank: 6, name: 'Ryan Nkosi',      rating: '6.97', change: '-2', sport: 'tennis' },
+                    { rank: 7, name: 'Tshego Molefe',   rating: '6.84', change: '+1', sport: 'tennis' },
+                    { rank: 8, name: 'Andre du Plessis',rating: '6.72', change: '0',  sport: 'pickleball' },
+                    { rank: 9, name: 'Kyle Botha',      rating: '6.61', change: '+4', sport: 'pickleball' },
+                    { rank: 10, name: 'Sipho Mahlangu', rating: '6.48', change: '-1', sport: 'pickleball' }
+                ],
+                womens: [
+                    { rank: 1, name: 'Danielle Steyn',  rating: '7.95', change: '+3', sport: 'tennis' },
+                    { rank: 2, name: 'Liesl van der Berg', rating: '7.71', change: '0', sport: 'tennis' },
+                    { rank: 3, name: 'Amahle Zulu',     rating: '7.52', change: '+1', sport: 'tennis' },
+                    { rank: 4, name: 'Carina Joubert',  rating: '7.34', change: '-1', sport: 'tennis' },
+                    { rank: 5, name: 'Nikita Patel',    rating: '7.18', change: '+2', sport: 'tennis' },
+                    { rank: 6, name: 'Yolandi Coetzee', rating: '7.05', change: '0',  sport: 'tennis' },
+                    { rank: 7, name: 'Fatima Essop',    rating: '6.93', change: '-2', sport: 'tennis' },
+                    { rank: 8, name: 'Refilwe Sithole', rating: '6.79', change: '+1', sport: 'pickleball' },
+                    { rank: 9, name: 'Gwen Strydom',    rating: '6.64', change: '+3', sport: 'pickleball' },
+                    { rank: 10, name: 'Bianca Swart',   rating: '6.50', change: '-1', sport: 'pickleball' }
+                ],
+                doubles: [
+                    { rank: 1, name: 'van Zyl / Louw',       rating: '8.10', change: '+1', sport: 'tennis' },
+                    { rank: 2, name: 'Steyn / Joubert',      rating: '7.98', change: '0',  sport: 'tennis' },
+                    { rank: 3, name: 'Ferreira / Zulu',      rating: '7.75', change: '+2', sport: 'tennis' },
+                    { rank: 4, name: 'Pretorius / Coetzee',  rating: '7.60', change: '-1', sport: 'tennis' },
+                    { rank: 5, name: 'Dlamini / Patel',      rating: '7.42', change: '+3', sport: 'tennis' },
+                    { rank: 6, name: 'du Plessis / Sithole', rating: '7.30', change: '+2', sport: 'pickleball' },
+                    { rank: 7, name: 'Botha / Strydom',      rating: '7.15', change: '0',  sport: 'pickleball' },
+                    { rank: 8, name: 'Nkosi / Essop',        rating: '7.02', change: '-2', sport: 'tennis' },
+                    { rank: 9, name: 'Mahlangu / Swart',     rating: '6.88', change: '+1', sport: 'pickleball' },
+                    { rank: 10, name: 'Molefe / van der Berg', rating: '6.71', change: '-1', sport: 'tennis' }
+                ]
+            });
             ]);
             const [regMode, setRegMode] = useState(null); // 'membership', 'league', null
             const [userProfile, setUserProfile] = useState({
@@ -990,25 +1017,49 @@
 
                                 {/* Q-Leagues Leaderboard Item */}
                                 <div className="md:col-span-2 bento-card rounded-[2.5rem] p-10 flex flex-col justify-between group overflow-hidden relative">
-                                    <div className="flex justify-between items-center relative z-10 mb-8">
+                                    <div className="flex justify-between items-center relative z-10 mb-6">
                                         <h4 className="text-3xl font-black uppercase italic tracking-tighter">Queenswood Elite Leaderboard</h4>
                                         <span className="text-[8px] font-bold text-lime-400 border border-lime-400/30 px-3 py-1 rounded-full uppercase tracking-widest">Season 01</span>
                                     </div>
-                                    <div className="space-y-3 relative z-10 max-h-[400px] overflow-y-auto no-scrollbar pr-2">
-                                        {leaderboard.map((player) => (
-                                            <div key={player.rank} className="flex justify-between items-center pb-3 border-b border-white/5 last:border-0">
-                                                <div className="flex items-center gap-4">
-                                                    <span className={`text-lg font-black italic ${player.rank <= 3 ? 'text-lime-400' : 'text-slate-600'}`}>#{player.rank.toString().padStart(2, '0')}</span>
-                                                    <span className="text-base font-black uppercase tracking-tight">{player.name}</span>
+                                    {(() => {
+                                        const [activeTab, setActiveTab] = React.useState('mens');
+                                        const categories = [
+                                            { key: 'mens',    label: "Men's"    },
+                                            { key: 'womens',  label: "Women's"  },
+                                            { key: 'doubles', label: 'Doubles'  },
+                                        ];
+                                        const players = leaderboard[activeTab] || [];
+                                        return (
+                                            <>
+                                                {/* Category tabs */}
+                                                <div className="flex gap-2 mb-6 relative z-10">
+                                                    {categories.map(c => (
+                                                        <button key={c.key} onClick={() => setActiveTab(c.key)}
+                                                            className={	ext-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-full border transition-all }>
+                                                            {c.label}
+                                                        </button>
+                                                    ))}
                                                 </div>
-                                                <div className="flex items-center gap-6">
-                                                    <span className="text-xs font-black italic text-white/60">{player.rating}</span>
-                                                    <span className={`text-[9px] font-black ${player.change.startsWith('+') ? 'text-blue-400' : 'text-slate-500'}`}>{player.change}</span>
+                                                {/* Player rows */}
+                                                <div className="space-y-3 relative z-10 max-h-[340px] overflow-y-auto no-scrollbar pr-2">
+                                                    {players.map((player) => (
+                                                        <div key={player.rank} className="flex justify-between items-center pb-3 border-b border-white/5 last:border-0">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className={	ext-sm font-black italic w-8 text-right }>#{player.rank.toString().padStart(2, '0')}</span>
+                                                                <span className="text-sm font-black uppercase tracking-tight">{player.name}</span>
+                                                                <span className="text-xs" title={player.sport === 'tennis' ? 'Tennis' : 'Pickleball'}>{player.sport === 'tennis' ? '🎾' : '🏓'}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-4">
+                                                                <span className="text-xs font-black italic text-white/60">{player.rating}</span>
+                                                                <span className={	ext-[9px] font-black w-6 text-right }>{player.change}</span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <button className="mt-8 text-white/40 hover:text-white font-black uppercase tracking-widest text-[9px] text-right transition-colors">Details & Full Ladder →</button>
+                                            </>
+                                        );
+                                    })()}
+                                    <button className="mt-6 text-white/40 hover:text-white font-black uppercase tracking-widest text-[9px] text-right transition-colors">Details & Full Ladder →</button>
                                 </div>
 
                                 <div className="md:col-span-2 bento-card rounded-[2.5rem] p-12 flex flex-col justify-center group overflow-hidden relative">
