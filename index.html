@@ -335,6 +335,7 @@
             const [heroTilt, setHeroTilt] = useState({ x: 0, y: 0 });
             const [scrollY, setScrollY] = useState(0);
             const [isLoggedIn, setIsLoggedIn] = useState(false);
+            const [selectedDate, setSelectedDate] = useState(null);
             const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
             const [isProfileOpen, setIsProfileOpen] = useState(false);
             const [liveStats, setLiveStats] = useState({ activePlayers: 12, nextEvent: 'Mixed Social @ 18:00', weather: '24°C Sunny' });
@@ -412,6 +413,26 @@
                 }
             };
 
+
+            const getNextSevenDays = () => {
+                const days = [];
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date();
+                    d.setDate(d.getDate() + i);
+                    days.push({
+                        full: d.toLocaleDateString('en-ZA', { weekday: 'short', month: 'short', day: 'numeric' }),
+                        short: d.toLocaleDateString('en-ZA', { weekday: 'short' }),
+                        day: d.getDate(),
+                        iso: d.toISOString().split('T')[0]
+                    });
+                }
+                return days;
+            };
+
+            const calculatePrice = () => {
+                const basePrice = 150;
+                return isLoggedIn ? basePrice * 0.85 : basePrice; // 15% discount for members
+            };
 
             const renderAnimatedText = (text, type = 'strike', delayOffset = 0) => {
                 const className = type === 'toss' ? 'toss-letter' : type === 'smash' ? 'smash-letter' : 'strike-letter';
@@ -965,7 +986,24 @@
 
                                     {bookingStep === 'time' && (
                                         <div className="animate-modern">
-                                            <h3 className="text-3xl font-black uppercase mb-8 tracking-tight">1. Choose your slot</h3>
+                                            <h3 className="text-3xl font-black uppercase mb-8 tracking-tight">1. Choose Date & Time</h3>
+
+                                            {/* Date Explorer */}
+                                            <div className="flex gap-4 overflow-x-auto pb-6 mb-8 no-scrollbar">
+                                                {getNextSevenDays().map((date) => (
+                                                    <button
+                                                        key={date.iso}
+                                                        onClick={() => setSelectedDate(date)}
+                                                        className={`flex-shrink-0 w-24 p-5 rounded-3xl border transition-all duration-300 ${selectedDate?.iso === date.iso
+                                                            ? 'bg-lime-400 border-lime-400 text-black scale-105'
+                                                            : 'bg-white/5 border-white/10 text-slate-500 hover:border-white/20'}`}
+                                                    >
+                                                        <p className="text-[8px] font-black uppercase tracking-widest mb-1">{date.short}</p>
+                                                        <p className="text-2xl font-black">{date.day}</p>
+                                                    </button>
+                                                ))}
+                                            </div>
+
                                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-10">
                                                 {['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'].map(time => (
                                                     <button
@@ -981,7 +1019,7 @@
                                             </div>
                                             <button
                                                 onClick={() => setBookingStep('court')}
-                                                disabled={!selectedTime}
+                                                disabled={!selectedTime || !selectedDate}
                                                 className="bg-lime-400 text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all disabled:opacity-50"
                                             >
                                                 Select Court →
@@ -1042,15 +1080,21 @@
                                                 </div>
                                                 <div className="flex justify-between items-center border-b border-white/5 pb-4">
                                                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Date</span>
-                                                    <span className="font-black text-white italic">Wed, February 25, 2026</span>
+                                                    <span className="font-black text-white italic">{selectedDate?.full}, 2026</span>
                                                 </div>
                                                 <div className="flex justify-between items-center border-b border-white/5 pb-4">
                                                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Time</span>
                                                     <span className="font-black text-white italic">{selectedTime} – {selectedTime ? (parseInt(selectedTime) + 1).toString().padStart(2, '0') : ''}:00</span>
                                                 </div>
+                                                {isLoggedIn && (
+                                                    <div className="flex justify-between items-center border-b border-white/5 pb-4">
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-lime-400">Elite Discount</span>
+                                                        <span className="font-black text-lime-400 italic">-15% Applied</span>
+                                                    </div>
+                                                )}
                                                 <div className="flex justify-between items-center pt-2">
                                                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Total</span>
-                                                    <span className="text-2xl font-black text-lime-400 tracking-tighter italic">R150.00</span>
+                                                    <span className="text-2xl font-black text-lime-400 tracking-tighter italic">R{calculatePrice().toFixed(2)}</span>
                                                 </div>
                                             </div>
 
@@ -1068,8 +1112,11 @@
                                                                 body: JSON.stringify({
                                                                     court: selectedCourt,
                                                                     time: selectedTime,
+                                                                    date: selectedDate?.iso,
                                                                     sport: activeSport,
-                                                                    userEmail: 'anonymous@example.com' // Placeholder
+                                                                    userId: isLoggedIn ? 'elite-user-123' : null,
+                                                                    userEmail: isLoggedIn ? userProfile.email : 'anonymous@example.com',
+                                                                    amount: calculatePrice() * 100 // Cents
                                                                 })
                                                             });
                                                             const data = await response.json();
