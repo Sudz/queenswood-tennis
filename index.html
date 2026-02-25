@@ -237,6 +237,45 @@
             animation: strike-in 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
             opacity: 0;
         }
+
+        /* Scroll Reveal System */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-60px);
+            transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .reveal-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(60px);
+            transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .reveal-right.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .parallax-video {
+            transform: scale(1.1) translateY(var(--p-y, 0px));
+            transition: transform 0.1s linear;
+        }
     </style>
 
 </head>
@@ -271,8 +310,30 @@
             const [checkoutStatus, setCheckoutStatus] = useState(null); // null, 'success', 'cancel'
             const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
             const [heroTilt, setHeroTilt] = useState({ x: 0, y: 0 });
+            const [scrollY, setScrollY] = useState(0);
             const videoRefs = useRef({});
             const cursorRef = useRef(null);
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    setScrollY(window.scrollY);
+
+                    // Trigger Scroll Reveal
+                    const reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+                    reveals.forEach(el => {
+                        const windowHeight = window.innerHeight;
+                        const revealTop = el.getBoundingClientRect().top;
+                        const revealPoint = 150;
+                        if (revealTop < windowHeight - revealPoint) {
+                            el.classList.add('active');
+                        }
+                    });
+                };
+
+                window.addEventListener('scroll', handleScroll);
+                handleScroll(); // Initial check
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
 
             useEffect(() => {
                 const handleMouseMove = (e) => {
@@ -352,12 +413,13 @@
                         ></div>
 
                         {/* Background Video Engine */}
-                        <div className="absolute inset-0 z-0">
+                        <div className="absolute inset-0 z-0 overflow-hidden">
                             {SPORTS.map(sport => (
                                 <video
                                     key={sport.id}
                                     ref={el => videoRefs.current[sport.id] = el}
-                                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms] ease-in-out ${activeSport === sport.id ? 'opacity-40' : 'opacity-0'}`}
+                                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms] ease-in-out parallax-video ${activeSport === sport.id ? 'opacity-40' : 'opacity-0'}`}
+                                    style={{ '--p-y': `${scrollY * 0.4}px` }}
                                     src={sport.video}
                                     muted
                                     loop
@@ -368,7 +430,7 @@
                             <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-transparent to-slate-950"></div>
                         </div>
 
-                        <div className="container mx-auto px-6 relative z-10 w-full">
+                        <div className="container mx-auto px-6 relative z-10 w-full reveal">
                             <div className="grid lg:grid-cols-2 gap-16 items-center">
                                 {/* Left Side: High Impact Typography */}
                                 <div className="animate-modern">
@@ -376,7 +438,7 @@
                                         <span className="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
                                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-lime-400">Elite 2026 Season</span>
                                     </div>
-                                    <h1 className="text-[100px] lg:text-[180px] font-black leading-[0.8] tracking-tighter mb-8 italic text-hero-mask relative shake-impact ace-strobe">
+                                    <h1 className="text-6xl md:text-8xl lg:text-[180px] font-black leading-[0.8] tracking-tighter mb-8 italic text-hero-mask relative shake-impact ace-strobe">
                                         <span className="block relative">
                                             {renderAnimatedText("READY TO", "toss")}
                                         </span>
@@ -408,7 +470,7 @@
                                 </div>
 
                                 {/* Right Side: Q-Pro Profile Card (Tilted) */}
-                                <div className="perspective-1000 hidden lg:block">
+                                <div className="perspective-1000 mt-16 lg:mt-0">
                                     <div
                                         className="tilt-card bg-white/5 backdrop-blur-3xl rounded-[3.5rem] p-12 border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] relative group cursor-pointer"
                                         style={{ transform: `rotateY(${heroTilt.x}deg) rotateX(${heroTilt.y}deg)` }}
@@ -475,7 +537,7 @@
                     {/* Bento Grid Features Section */}
                     <section className="bg-slate-950 py-32 px-6">
                         <div className="max-w-7xl mx-auto">
-                            <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8 animate-modern">
+                            <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8 reveal">
                                 <div>
                                     <h3 className="text-6xl font-black uppercase italic mb-6 leading-tight tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">The {activeSport === 'Tennis' ? 'Tennis' : 'Pickleball'} <br /> <span className="text-lime-400">Revolution.</span></h3>
                                     <p className="text-slate-500 text-lg max-w-xl font-medium">Immerse yourself in a community built on performance and progression. Level up today.</p>
@@ -521,8 +583,8 @@
 
                     {/* About Us Section */}
                     <section id="about" className="bg-slate-950 py-32 px-6 relative overflow-hidden">
-                        <div className="absolute top-1/2 left-0 w-[50%] h-[50%] bg-blue-600/5 blur-[120px] rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-                        <div className="max-w-7xl mx-auto relative z-10">
+                        <div className="absolute top-1/2 left-0 w-[50%] h-[50%] bg-blue-600/5 blur-[120px] rounded-full -translate-x-1/2 -translate-y-1/2" style={{ transform: `translate(-50%, -50%) translateY(${scrollY * 0.1}px)` }}></div>
+                        <div className="max-w-7xl mx-auto relative z-10 reveal">
                             <div className="grid lg:grid-cols-2 gap-20 items-center">
                                 <div className="animate-modern">
                                     <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-500 mb-6 font-primary">A Legacy of Tennis Excellence</h2>
@@ -565,9 +627,9 @@
 
                     {/* Membership Section */}
                     <section id="membership" className="bg-slate-900/30 py-32 px-6 border-y border-white/5 relative overflow-hidden">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-lime-400/5 blur-[120px] rounded-full"></div>
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-lime-400/5 blur-[120px] rounded-full" style={{ transform: `translate(-50%, -50%) translateY(${scrollY * -0.05}px)` }}></div>
 
-                        <div className="max-w-7xl mx-auto relative z-10">
+                        <div className="max-w-7xl mx-auto relative z-10 reveal">
                             <div className="text-center mb-20 animate-modern">
                                 <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-lime-400 mb-6">Join the Movement</h2>
                                 <h3 className="text-6xl font-black uppercase tracking-tighter italic mb-12">Membership Plans</h3>
@@ -649,9 +711,9 @@
                     <section id="booking" className="bg-slate-950 py-32 px-6 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-500/5 blur-[120px] rounded-full"></div>
 
-                        <div className="max-w-5xl mx-auto text-center relative z-10">
-                            <div className="animate-modern">
-                                <h2 className="text-7xl lg:text-9xl font-black uppercase tracking-tighter mb-10 italic">
+                        <div className="max-w-5xl mx-auto text-center relative z-10 reveal">
+                            <div>
+                                <h2 className="text-5xl md:text-7xl lg:text-9xl font-black uppercase tracking-tighter mb-10 italic">
                                     Ready to <br />
                                     <span className="text-lime-400">PLAY?</span>
                                 </h2>
@@ -805,7 +867,7 @@
                     </section>
                     {/* Footer - Pretoria Destination */}
                     < footer className="relative bg-slate-950 pt-32 pb-16 border-t border-white/5 overflow-hidden" >
-                        <div className="container mx-auto px-6">
+                        <div className="container mx-auto px-6 reveal">
                             <div className="grid lg:grid-cols-4 gap-16 mb-24">
                                 <div className="lg:col-span-2">
                                     <h1 className="text-3xl font-black italic tracking-tighter uppercase mb-8">
