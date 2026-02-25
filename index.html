@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queenswood Tennis & Pickleball | UTR Clone</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-lime: #a3e635;
+            --brand-blue: #3b82f6;
+            --brand-slate: #020617;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--brand-slate);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .utr-gradient {
+            background: linear-gradient(135deg, #1e40af 0%, #a3e635 100%);
+        }
+
+        .glass-island {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bento-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .bento-card:hover {
+            border-color: rgba(163, 230, 53, 0.3);
+            transform: translateY(-4px);
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .tilt-card {
+            transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+            transform-style: preserve-3d;
+        }
+
+        .text-hero-mask {
+            background: linear-gradient(to bottom, #fff 20%, rgba(255, 255, 255, 0.7));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.05em;
+            filter: drop-shadow(0 0 40px rgba(0, 0, 0, 0.5));
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        }
+
+        .ambient-light {
+            pointer-events: none;
+            position: absolute;
+            width: 1000px;
+            height: 1000px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+            z-index: 1;
+            transform: translate(-50%, -50%);
+        }
+
+        .animate-modern {
+            animation: fade-in-up 0.8s ease-out forwards;
+        }
+
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            background: rgba(163, 230, 53, 0.5);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease-out;
+            mix-blend-mode: difference;
+        }
+
+        @keyframes strobe {
+
+            0%,
+            20%,
+            40%,
+            60%,
+            80%,
+            100% {
+                opacity: 1;
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                opacity: 0;
+            }
+        }
+
+        .strobe-text {
+            animation: strobe 0.4s ease-out forwards;
+        }
+
+        @keyframes toss-up {
+            0% {
+                transform: translateY(100px) scale(0.8);
+                opacity: 0;
+                filter: blur(20px);
+            }
+
+            40% {
+                transform: translateY(-30px) scale(1.05);
+                opacity: 1;
+                filter: blur(2px);
+            }
+
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        @keyframes smash-down {
+            0% {
+                transform: translateY(-200px) scale(3);
+                opacity: 0;
+                filter: blur(30px);
+            }
+
+            30% {
+                transform: translateY(0) scale(0.9);
+                opacity: 1;
+                filter: blur(5px);
+            }
+
+            50% {
+                transform: translateY(0) scale(1.1);
+            }
+
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        @keyframes ground-shake {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translate(-4px, -4px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translate(4px, 4px);
+            }
+        }
+
+        .toss-letter {
+            display: inline-block;
+            animation: toss-up 1.0s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0;
+        }
+
+        .smash-letter {
+            display: inline-block;
+            animation: smash-down 0.7s cubic-bezier(0.13, 1.62, 0.45, 0.94) forwards;
+            opacity: 0;
+        }
+
+        .cursor-hover {
+            transform: scale(4);
+            background: rgba(163, 230, 53, 0.2);
+        }
+
+        @keyframes strike-in {
+            0% {
+                transform: translateX(-100%) skewX(-30deg);
+                filter: blur(20px);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translateX(10%) skewX(0deg);
+                filter: blur(5px);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateX(0) skewX(0deg);
+                filter: blur(0);
+                opacity: 1;
+            }
+        }
+
+        .strike-letter {
+            display: inline-block;
+            animation: strike-in 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            opacity: 0;
+        }
+    </style>
+
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body className="bg-slate-950 text-white font-primary selection:bg-lime-400 selection:text-black">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const SPORTS = [
+            { id: 'Tennis', label: '🎾 Tennis', video: 'https://player.vimeo.com/external/370331493.sd.mp4?s=7b23158f94e69da598bc36028f892a08832a8a81&profile_id=139&oauth2_token_id=57447761' },
+            { id: 'Both', label: '⚡ Both', video: 'https://player.vimeo.com/external/481487537.sd.mp4?s=8553220ed3451fc77c68758b99c855a02e6005c2&profile_id=139&oauth2_token_id=57447761' },
+            { id: 'Pickleball', label: '🏓 Pickleball', video: 'https://player.vimeo.com/external/517090025.sd.mp4?s=f52033bc69f5280b3d115fa766572e705b4a9a08&profile_id=139&oauth2_token_id=57447761' }
+        ];
+
+        const COURTS = [
+            { id: 1, name: 'Court 1', type: 'tennis', features: ['Floodlights', 'Hard Court'] },
+            { id: 2, name: 'Court 2', type: 'tennis', features: ['Floodlights', 'Hard Court'] },
+            { id: 3, name: 'Court 3', type: 'tennis', features: ['Floodlights', 'Hard Court'] },
+            { id: 4, name: 'Court 4', type: 'multi', features: ['Floodlights', 'Hard Court', 'Pickleball Lines'] },
+            { id: 5, name: 'Court 5', type: 'multi', features: ['Floodlights', 'Hard Court', 'Pickleball Lines'] }
+        ];
+
+        function App() {
+            const [activeSport, setActiveSport] = useState('Pickleball');
+            const [loadedSports, setLoadedSports] = useState(['Pickleball']);
+            const [user, setUser] = useState(null);
+            const [billingCycle, setBillingCycle] = useState('monthly');
+            const [selectedTime, setSelectedTime] = useState(null);
+            const [selectedCourt, setSelectedCourt] = useState(null);
+            const [bookingStep, setBookingStep] = useState('time'); // 'time', 'court', 'review', 'payment'
+            const [checkoutStatus, setCheckoutStatus] = useState(null); // null, 'success', 'cancel'
+            const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+            const [heroTilt, setHeroTilt] = useState({ x: 0, y: 0 });
+            const videoRefs = useRef({});
+            const cursorRef = useRef(null);
+
+            useEffect(() => {
+                const handleMouseMove = (e) => {
+                    if (cursorRef.current) {
+                        cursorRef.current.style.left = `${e.clientX}px`;
+                        cursorRef.current.style.top = `${e.clientY}px`;
+                    }
+                    setMousePos({ x: e.clientX, y: e.clientY });
+
+                    // Hero specific tilt logic
+                    const hero = document.getElementById('hero');
+                    if (hero) {
+                        const rect = hero.getBoundingClientRect();
+                        const x = (e.clientX - rect.left) / rect.width - 0.5;
+                        const y = (e.clientY - rect.top) / rect.height - 0.5;
+                        setHeroTilt({ x: x * 10, y: y * -10 });
+                    }
+                };
+                window.addEventListener('mousemove', handleMouseMove);
+                return () => window.removeEventListener('mousemove', handleMouseMove);
+            }, []);
+
+            const triggerLoad = (id) => {
+                if (!loadedSports.includes(id)) {
+                    setLoadedSports(prev => [...prev, id]);
+                }
+            };
+
+            const handleGoogleLogin = (response) => {
+                const base64Url = response.credential.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+
+                setUser(JSON.parse(jsonPayload));
+            };
+
+            useEffect(() => {
+                const initGoogle = () => {
+                    if (window.google) {
+                        google.accounts.id.initialize({
+                            client_id: "713916246830-7v5v6v6v6v6v6v6v.apps.googleusercontent.com", // Example ID
+                            callback: handleGoogleLogin
+                        });
+                        google.accounts.id.renderButton(
+                            document.getElementById("googleBtn"),
+                            { theme: "outline", size: "large", shape: "pill" }
+                        );
+                    }
+                };
+                setTimeout(initGoogle, 1000);
+            }, []);
+
+            const renderAnimatedText = (text, type = 'strike', delayOffset = 0) => {
+                const className = type === 'toss' ? 'toss-letter' : type === 'smash' ? 'smash-letter' : 'strike-letter';
+                return text.split('').map((char, i) => (
+                    <span
+                        key={i}
+                        className={className}
+                        style={{ animationDelay: `${delayOffset + (i * 0.05)}s` }}
+                    >
+                        {char === ' ' ? '\u00A0' : char}
+                    </span>
+                ));
+            };
+
+            return (
+                <div className="min-h-screen relative overflow-hidden bg-slate-950 font-primary">
+                    <div ref={cursorRef} className="custom-cursor hidden lg:block"></div>
+
+                    {/* Ambient Glow Bubbles */}
+                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full animate-pulse"></div>
+                    <div className="absolute bottom-[20%] right-[-10%] w-[30%] h-[30%] bg-lime-400/10 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
+
+                    {/* Top Bar - 2026 Floating Island */}
+                    <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 px-8 py-3 glass-island rounded-full flex justify-between items-center shadow-2xl transition-all duration-500 hover:w-[98%]">
+                        <div className="flex items-center gap-12">
+                            <h1 className="text-xl font-black italic tracking-tighter uppercase cursor-pointer group">
+                                Queenswood<span className="text-blue-500 group-hover:text-lime-400 transition-colors duration-500">Sports</span>
+                            </h1>
+                            <div className="hidden lg:flex gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                <a href="#about" className="hover:text-white transition-all hover:tracking-[0.3em] duration-300">About</a>
+                                <a href="#membership" className="hover:text-white transition-all hover:tracking-[0.3em] duration-300">Membership</a>
+                                <a href="#booking" className="hover:text-white transition-all hover:tracking-[0.3em] duration-300">Book Court</a>
+                                <a href="#" className={`transition-all hover:tracking-[0.3em] duration-300 ${activeSport === 'Pickleball' ? 'text-lime-400 underline underline-offset-8' : 'hover:text-white'}`}>Pickleball Hub</a>
+                            </div>
+                        </div>
+                        <div className="flex gap-6 items-center">
+                            {user ? (
+                                <div className="flex items-center gap-4 bg-white/5 pr-4 pl-1.5 py-1.5 rounded-full border border-white/10 animate-modern">
+                                    <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full border border-white/20" />
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-white">{user.given_name}</span>
+                                        <button onClick={() => setUser(null)} className="text-[8px] font-black uppercase tracking-widest text-slate-500 hover:text-red-400 transition-colors text-left">Logout</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div id="googleBtn" className="animate-modern"></div>
+                            )}
+                            <button className="hidden md:block bg-white text-black px-8 py-2.5 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 hover:scale-105 transition-all active:scale-95 shadow-xl shadow-white/10">Member Login</button>
+                        </div>
+                    </nav>
+
+                    {/* Hero Section */}
+                    <section id="hero" className="relative min-h-screen flex items-center pt-24 overflow-hidden bg-slate-950">
+                        {/* Dynamic Ambient Light */}
+                        <div
+                            className="ambient-light transition-all duration-300 ease-out"
+                            style={{
+                                left: mousePos.x,
+                                top: mousePos.y,
+                                background: `radial-gradient(circle, ${activeSport === 'Pickleball' ? 'rgba(163, 230, 53, 0.15)' : 'rgba(59, 130, 246, 0.15)'} 0%, transparent 70%)`
+                            }}
+                        ></div>
+
+                        {/* Background Video Engine */}
+                        <div className="absolute inset-0 z-0">
+                            {SPORTS.map(sport => (
+                                <video
+                                    key={sport.id}
+                                    ref={el => videoRefs.current[sport.id] = el}
+                                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms] ease-in-out ${activeSport === sport.id ? 'opacity-40' : 'opacity-0'}`}
+                                    src={sport.video}
+                                    muted
+                                    loop
+                                    playsInline
+                                    autoPlay
+                                />
+                            ))}
+                            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-transparent to-slate-950"></div>
+                        </div>
+
+                        <div className="container mx-auto px-6 relative z-10 w-full">
+                            <div className="grid lg:grid-cols-2 gap-16 items-center">
+                                {/* Left Side: High Impact Typography */}
+                                <div className="animate-modern">
+                                    <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/10 mb-8 backdrop-blur-xl">
+                                        <span className="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-lime-400">Elite 2026 Season</span>
+                                    </div>
+                                    <h1 className="text-[100px] lg:text-[180px] font-black leading-[0.8] tracking-tighter mb-8 italic text-hero-mask relative shake-impact ace-strobe">
+                                        <div className="relative">
+                                            {renderAnimatedText("READY TO", "toss")}
+                                        </div>
+                                        <div className="relative text-lime-400 drop-shadow-[0_0_50px_rgba(163,230,53,0.5)]">
+                                            {renderAnimatedText("SERVE?", "smash", 0.8)}
+                                        </div>
+                                    </h1>
+                                    <p className="text-xl lg:text-2xl text-slate-400 font-medium mb-12 max-w-xl leading-relaxed">
+                                        Experience the next generation of racket sports at <span className="text-white font-black">Queenswood</span>. Pro-grade surfaces, immersive motion, and an elite community.
+                                    </p>
+
+                                    <div className="flex flex-wrap gap-6 items-center">
+                                        <a href="#booking" className="bg-lime-400 text-black px-12 py-6 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-2xl shadow-lime-400/20 active:scale-95">Book Now</a>
+                                        <div className="flex gap-2 p-2 bg-white/5 rounded-[2rem] border border-white/10 backdrop-blur-2xl">
+                                            {SPORTS.map(sport => (
+                                                <button
+                                                    key={sport.id}
+                                                    onClick={() => {
+                                                        setActiveSport(sport.id);
+                                                        triggerLoad(sport.id);
+                                                    }}
+                                                    className={`px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 ${activeSport === sport.id ? 'bg-white text-black shadow-xl ring-4 ring-white/10' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                                                >
+                                                    {sport.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Right Side: Q-Pro Profile Card (Tilted) */}
+                                <div className="perspective-1000 hidden lg:block">
+                                    <div
+                                        className="tilt-card bg-white/5 backdrop-blur-3xl rounded-[3.5rem] p-12 border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] relative group cursor-pointer"
+                                        style={{ transform: `rotateY(${heroTilt.x}deg) rotateX(${heroTilt.y}deg)` }}
+                                    >
+                                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-lime-400 rounded-t-full"></div>
+
+                                        <div className="flex justify-between items-start mb-12">
+                                            <div className="flex items-center gap-4">
+                                                <div className="relative">
+                                                    <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=150&h=150" className="w-20 h-20 rounded-3xl border-2 border-white/10 grayscale group-hover:grayscale-0 transition-all duration-700" alt="Pro Player" />
+                                                    <div className="absolute -bottom-2 -right-2 bg-lime-400 px-2 py-1 rounded-lg flex items-center justify-center text-black font-black text-[8px] border-4 border-slate-950 animate-pulse">QWP PRO</div>
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-black text-2xl uppercase tracking-tighter text-white">Xander Vance</h4>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-lime-400">Queenswood Pro Elite</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Q-Ranking</div>
+                                                <div className="text-3xl font-black italic text-lime-400 tracking-tighter">#04</div>
+                                            </div>
+                                        </div>
+
+                                        {/* Player Stats Grid */}
+                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+                                            {[
+                                                { l: 'Win Rate', v: '89%', c: 'text-blue-400' },
+                                                { l: 'Serve Speed', v: '194km/h', c: 'text-white' },
+                                                { l: 'Accuracy', v: '92%', c: 'text-lime-400' },
+                                                { l: 'Q-Rating', v: '#04', c: 'text-white' }
+                                            ].map(s => (
+                                                <div key={s.l} className="p-4 rounded-2xl bg-white/5 border border-white/5 group-hover:bg-white/10 transition-all">
+                                                    <div className="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">{s.l}</div>
+                                                    <div className={`text-xl font-black italic ${s.c}`}>{s.v}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-blue-600/20 to-lime-400/20 border border-white/10 backdrop-blur-3xl">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-white">Active Session</span>
+                                                <span className="flex items-center gap-2 text-[8px] font-black text-lime-400 uppercase tracking-widest">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-lime-400 animate-ping"></span> Live Now
+                                                </span>
+                                            </div>
+                                            <h5 className="text-xl font-black uppercase tracking-tight italic text-white mb-2">Morning Power-Drill</h5>
+                                            <p className="text-[10px] font-bold text-slate-400">Court 05 • Advanced Training</p>
+                                        </div>
+
+                                        {/* Light reflection effect */}
+                                        <div className="absolute inset-x-8 -bottom-6 h-12 bg-lime-400/20 blur-[60px] rounded-full group-hover:bg-lime-400/40 transition-all duration-700"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Immersive Scroll Indicator */}
+                        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 animate-bounce">
+                            <span className="text-[8px] font-black uppercase tracking-[0.5em] text-slate-600">Explore Legacy</span>
+                            <div className="w-px h-24 bg-gradient-to-b from-lime-400 to-transparent"></div>
+                        </div>
+                    </section>
+
+                    {/* Bento Grid Features Section */}
+                    <section className="bg-slate-950 py-32 px-6">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8 animate-modern">
+                                <div>
+                                    <h3 className="text-6xl font-black uppercase italic mb-6 leading-tight tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">The {activeSport === 'Tennis' ? 'Tennis' : 'Pickleball'} <br /> <span className="text-lime-400">Revolution.</span></h3>
+                                    <p className="text-slate-500 text-lg max-w-xl font-medium">Immerse yourself in a community built on performance and progression. Level up today.</p>
+                                </div>
+                                <button className="text-lime-400 font-black uppercase tracking-[0.3em] text-[10px] border-b-2 border-lime-400/20 pb-2 hover:border-lime-400 hover:tracking-[0.4em] transition-all duration-500">View All Events →</button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-6 h-auto md:h-[700px]">
+                                {/* High impact Bento item */}
+                                <div className="md:col-span-2 md:row-span-2 rounded-[3.5rem] p-12 flex flex-col justify-end group overflow-hidden relative bento-card">
+                                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-blue-600/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                                    <div className="h-24 w-24 rounded-3xl bg-blue-500/10 flex items-center justify-center text-5xl mb-10 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative z-10">🏆</div>
+                                    <h4 className="text-5xl font-black mb-4 uppercase tracking-tighter group-hover:text-lime-400 transition-all relative z-10">Q-Leagues</h4>
+                                    <p className="text-slate-400 font-medium leading-relaxed max-w-md relative z-10 text-xl">Join our Level-Based competitive engine. Verified UTR play, weekly match-ups, and the elite Queenswood Ladder starting March 2026.</p>
+                                    <div className="mt-8 flex gap-4 relative z-10 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                                        <button className="bg-white text-black px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 transition-colors shadow-2xl">Register for Winter Open</button>
+                                    </div>
+                                </div>
+
+                                <div className="md:col-span-2 bento-card rounded-[2.5rem] p-12 flex flex-col justify-center group overflow-hidden relative">
+                                    <div className="absolute inset-0 bg-lime-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                                    <div className="flex items-center gap-10 relative z-10">
+                                        <div className="h-20 w-20 rounded-2xl bg-white/5 flex items-center justify-center text-4xl group-hover:rotate-12 transition-transform duration-500">🎾</div>
+                                        <div>
+                                            <h4 className="text-3xl font-black uppercase tracking-tight group-hover:text-lime-400 transition-colors">Social Dinks</h4>
+                                            <p className="text-slate-500 font-medium mt-2 text-lg">Every Thursday from 18:00. <br />R60 visitors. All levels welcome.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bento-card rounded-[2.5rem] p-10 flex flex-col justify-center items-center text-center group">
+                                    <div className="h-20 w-20 rounded-2xl bg-white/5 flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-500">🎓</div>
+                                    <h4 className="text-lg font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors duration-500">Clinics</h4>
+                                </div>
+
+                                <div className="bento-card rounded-[2.5rem] p-10 flex flex-col justify-center items-center text-center group">
+                                    <div className="h-20 w-20 rounded-2xl bg-white/5 flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-500">⚡</div>
+                                    <h4 className="text-lg font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors duration-500">Pro Shop</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* About Us Section */}
+                    <section id="about" className="bg-slate-950 py-32 px-6 relative overflow-hidden">
+                        <div className="absolute top-1/2 left-0 w-[50%] h-[50%] bg-blue-600/5 blur-[120px] rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+                        <div className="max-w-7xl mx-auto relative z-10">
+                            <div className="grid lg:grid-cols-2 gap-20 items-center">
+                                <div className="animate-modern">
+                                    <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-500 mb-6 font-primary">A Legacy of Tennis Excellence</h2>
+                                    <h3 className="text-7xl font-black uppercase mb-10 leading-[0.8] tracking-tighter">
+                                        COMMUNITY <br />
+                                        <span className="text-lime-400 italic font-black">DRIVEN.</span>
+                                    </h3>
+                                    <p className="text-2xl text-white font-medium mb-12 leading-relaxed">
+                                        Since the early 1950s, Queenswood Tennis Club has been a cornerstone of the Gauteng tennis community.
+                                    </p>
+                                    <div className="grid grid-cols-3 gap-6 mb-12">
+                                        <div className="bento-card rounded-3xl p-6 text-center shadow-2xl">
+                                            <p className="text-4xl font-black text-white mb-2 tracking-tighter">70+</p>
+                                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Years of History</p>
+                                        </div>
+                                        <div className="bento-card rounded-3xl p-6 text-center border-lime-400/20 shadow-2xl">
+                                            <p className="text-4xl font-black text-lime-400 mb-2 tracking-tighter">300+</p>
+                                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Active Members</p>
+                                        </div>
+                                        <div className="bento-card rounded-3xl p-6 text-center shadow-2xl">
+                                            <p className="text-4xl font-black text-white mb-2 tracking-tighter">50+</p>
+                                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Monthly Events</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="bento-card rounded-[3.5rem] p-12 relative group animate-modern overflow-hidden" style={{ animationDelay: '0.2s' }}>
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/5 blur-3xl rounded-full translate-x-16 -translate-y-16"></div>
+                                    <h4 className="text-3xl font-black uppercase italic mb-8 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">Technical Specs</h4>
+                                    <div className="space-y-6 text-slate-400 text-lg leading-relaxed font-medium">
+                                        <p><span className="text-white font-black uppercase text-[10px] tracking-widest mr-4 border-b border-white/10 pb-1">Surface</span> Pro-Grade DecoTurf System (US Open Standard).</p>
+                                        <p><span className="text-white font-black uppercase text-[10px] tracking-widest mr-4 border-b border-white/10 pb-1">Illumination</span> Twin-Mast 2000 Lux LED Stadium Lighting.</p>
+                                        <p><span className="text-white font-black uppercase text-[10px] tracking-widest mr-4 border-b border-white/10 pb-1">Coaching</span> Led by <span className="text-lime-400">Carla Smith</span>, <span className="text-lime-400">Joe Lodder</span> & Elite Staff.</p>
+                                        <p><span className="text-white font-black uppercase text-[10px] tracking-widest mr-4 border-b border-white/10 pb-1">Analytics</span> Precision Match Tracking & Video Replay.</p>
+                                        <p className="border-t border-white/5 pt-6 text-white italic">"Where elite performance meets a community legacy built over 70 years."</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Membership Section */}
+                    <section id="membership" className="bg-slate-900/30 py-32 px-6 border-y border-white/5 relative overflow-hidden">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-lime-400/5 blur-[120px] rounded-full"></div>
+
+                        <div className="max-w-7xl mx-auto relative z-10">
+                            <div className="text-center mb-20 animate-modern">
+                                <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-lime-400 mb-6">Join the Movement</h2>
+                                <h3 className="text-6xl font-black uppercase tracking-tighter italic mb-12">Membership Plans</h3>
+
+                                {/* Billing Toggle */}
+                                <div className="flex items-center justify-center gap-6 mb-12">
+                                    <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${billingCycle === 'monthly' ? 'text-white' : 'text-slate-500'}`}>Monthly</span>
+                                    <button
+                                        onClick={() => setBillingCycle(prev => prev === 'monthly' ? 'annual' : 'monthly')}
+                                        className="w-16 h-8 bg-white/10 rounded-full p-1 relative transition-all duration-500 hover:bg-white/20"
+                                    >
+                                        <div className={`w-6 h-6 bg-lime-400 rounded-full transition-all duration-500 transform ${billingCycle === 'annual' ? 'translate-x-8 shadow-[0_0_20px_rgba(163,230,53,0.5)]' : ''}`}></div>
+                                    </button>
+                                    <div className="flex items-center gap-3">
+                                        <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${billingCycle === 'annual' ? 'text-white' : 'text-slate-500'}`}>Annual</span>
+                                        <span className="bg-lime-400/10 text-lime-400 border border-lime-400/30 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest animate-pulse">Save 20%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-3 gap-8 animate-modern">
+                                {/* Adult Plan */}
+                                <div className="flex flex-col bg-white rounded-[4rem] p-12 text-black shadow-[0_40px_100px_rgba(163,230,53,0.3)] scale-105 z-10 border-4 border-lime-400 relative overflow-hidden group hover:scale-[1.08] transition-all duration-500">
+                                    <div className="absolute top-0 right-0 bg-lime-400 text-black px-8 py-3 rounded-bl-[2rem] font-black text-[10px] uppercase tracking-widest">Elite Tier</div>
+                                    <h4 className="text-5xl font-black uppercase mb-2 tracking-tighter">Adult Pro</h4>
+                                    <p className="text-slate-500 font-bold text-sm mb-10 uppercase tracking-widest">The Gold Standard Access</p>
+                                    <div className="mb-10">
+                                        <span className="text-7xl font-black tracking-tighter italic">R{billingCycle === 'monthly' ? '150' : '120'}</span>
+                                        <span className="text-slate-500 font-black text-xl">/mo</span>
+                                        <p className="text-[10px] font-black uppercase tracking-tighter text-slate-400 mt-3">+ R90 joining fee</p>
+                                    </div>
+                                    <div className="space-y-6 mb-12">
+                                        <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest bg-slate-50 p-3 rounded-2xl"><span className="text-lime-500 scale-125">✓</span> 24/7 Priority Booking Node</div>
+                                        <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest bg-slate-50 p-3 rounded-2xl"><span className="text-lime-500 scale-125">✓</span> Pro-Shop & Restring (15% OFF)</div>
+                                        <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest bg-slate-50 p-3 rounded-2xl"><span className="text-lime-500 scale-125">✓</span> High-FPS Performance Tracking</div>
+                                        <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest bg-slate-50 p-3 rounded-2xl"><span className="text-lime-500 scale-125">✓</span> Guest Access Pass (2/month)</div>
+                                    </div>
+                                    <button className="mt-auto w-full bg-black text-white py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-lime-400 hover:text-black transition-all duration-300 shadow-2xl">Start Professional Journey</button>
+                                </div>
+
+                                {/* Masters Plan */}
+                                <div className="flex flex-col bento-card rounded-[3.5rem] p-12 border-white/10 hover:border-lime-400/30 transition-all duration-700 group">
+                                    <h4 className="text-5xl font-black uppercase mb-2 tracking-tighter">Masters</h4>
+                                    <p className="text-slate-500 font-bold text-sm mb-10 uppercase tracking-widest">For athletes 60+</p>
+                                    <div className="mb-10">
+                                        <span className="text-7xl font-black tracking-tighter italic text-white">R{billingCycle === 'monthly' ? '120' : '95'}</span>
+                                        <span className="text-slate-500 font-black text-xl">/mo</span>
+                                        <p className="text-[10px] font-black uppercase tracking-tighter text-slate-500 mt-3">+ R90 joining fee</p>
+                                    </div>
+                                    <div className="space-y-6 mb-12 text-slate-400 font-medium">
+                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-lime-400">✓</span> Morning Social Priority Slot</div>
+                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-lime-400">✓</span> League & Mixed Participation</div>
+                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-lime-400">✓</span> Clubhouse Performance Perks</div>
+                                    </div>
+                                    <button className="mt-auto w-full bg-white/5 border border-white/10 text-white py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all">Sign Up</button>
+                                </div>
+
+                                {/* Junior Plan */}
+                                <div className="flex flex-col bento-card rounded-[3.5rem] p-12 border-white/10 hover:border-blue-400/30 transition-all duration-700 group">
+                                    <h4 className="text-5xl font-black uppercase mb-2 tracking-tighter text-blue-500 uppercase">Junior</h4>
+                                    <p className="text-slate-500 font-bold text-sm mb-10 uppercase tracking-widest">Legacy for 21 & Under</p>
+                                    <div className="mb-10">
+                                        <span className="text-7xl font-black tracking-tighter italic text-white">R{billingCycle === 'monthly' ? '75' : '60'}</span>
+                                        <span className="text-slate-500 font-black text-xl">/mo</span>
+                                        <p className="text-[10px] font-black uppercase tracking-tighter text-slate-500 mt-3">+ R90 joining fee</p>
+                                    </div>
+                                    <div className="space-y-6 mb-12 text-slate-400 font-medium">
+                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-blue-500">✓</span> Junior Masterclass Invites</div>
+                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-blue-500">✓</span> Competitive Ladder Seed</div>
+                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-blue-500">✓</span> Performance Analytics Node</div>
+                                    </div>
+                                    <button className="mt-auto w-full bg-white/5 border border-white/10 text-white py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all">Apply for Academy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Booking Section */}
+                    <section id="booking" className="bg-slate-950 py-32 px-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-500/5 blur-[120px] rounded-full"></div>
+
+                        <div className="max-w-5xl mx-auto text-center relative z-10">
+                            <div className="animate-modern">
+                                <h2 className="text-7xl lg:text-9xl font-black uppercase tracking-tighter mb-10 italic">
+                                    Ready to <br />
+                                    <span className="text-lime-400">PLAY?</span>
+                                </h2>
+
+                                <div className="bento-card rounded-[3rem] p-8 lg:p-12 mb-12 shadow-2xl relative overflow-hidden group border border-white/5 backdrop-blur-3xl">
+                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-lime-400"></div>
+
+                                    {/* Booking Steps Header */}
+                                    <div className="flex justify-center gap-4 mb-12">
+                                        {['time', 'court', 'review'].map((step, idx) => (
+                                            <div key={step} className="flex items-center gap-3">
+                                                <div className={`w-8 h-8 rounded-full border flex items-center justify-center font-black text-xs transition-all duration-500 ${bookingStep === step ? 'bg-lime-400 border-lime-400 text-black scale-110' : 'border-white/10 text-slate-500'}`}>
+                                                    {idx + 1}
+                                                </div>
+                                                <span className={`text-[10px] uppercase font-black tracking-widest hidden sm:block ${bookingStep === step ? 'text-white' : 'text-slate-600'}`}>{step}</span>
+                                                {idx < 2 && <div className="w-8 h-px bg-white/10 mx-2"></div>}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {bookingStep === 'time' && (
+                                        <div className="animate-modern">
+                                            <h3 className="text-3xl font-black uppercase mb-8 tracking-tight">1. Choose your slot</h3>
+                                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-10">
+                                                {['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'].map(time => (
+                                                    <button
+                                                        key={time}
+                                                        onClick={() => setSelectedTime(time)}
+                                                        className={`py-4 rounded-2xl font-black text-[10px] tracking-widest transition-all duration-300 border ${selectedTime === time
+                                                            ? 'bg-white text-black border-white scale-105 shadow-xl'
+                                                            : 'bg-white/5 text-slate-400 border-white/5 hover:bg-white/10 hover:text-white'}`}
+                                                    >
+                                                        {time}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            <button
+                                                onClick={() => setBookingStep('court')}
+                                                disabled={!selectedTime}
+                                                className="bg-lime-400 text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all disabled:opacity-50"
+                                            >
+                                                Select Court →
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {bookingStep === 'court' && (
+                                        <div className="animate-modern">
+                                            <h3 className="text-3xl font-black uppercase mb-8 tracking-tight">2. Select a Court</h3>
+                                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+                                                {COURTS.map(court => (
+                                                    <button
+                                                        key={court.id}
+                                                        onClick={() => setSelectedCourt(court)}
+                                                        className={`p-6 rounded-[2rem] border text-left transition-all duration-300 ${selectedCourt?.id === court.id
+                                                            ? 'bg-white text-black border-white shadow-2xl scale-[1.02]'
+                                                            : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'}`}
+                                                    >
+                                                        <div className="flex justify-between items-start mb-4">
+                                                            <h4 className="font-black text-lg uppercase tracking-tight">{court.name}</h4>
+                                                            <span className={`text-[8px] px-2 py-1 rounded-full font-black uppercase tracking-widest ${selectedCourt?.id === court.id ? 'bg-black text-white' : 'bg-white/10 text-slate-400'}`}>
+                                                                {court.type}
+                                                            </span>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            {court.features.map(f => (
+                                                                <div key={f} className={`text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 ${selectedCourt?.id === court.id ? 'text-slate-600' : 'text-slate-500'}`}>
+                                                                    <span className="w-1 h-1 rounded-full bg-current"></span> {f}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            <div className="flex gap-4 justify-center">
+                                                <button onClick={() => setBookingStep('time')} className="px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs border border-white/10 text-white hover:bg-white/5 transition-all">Back</button>
+                                                <button
+                                                    onClick={() => setBookingStep('review')}
+                                                    disabled={!selectedCourt}
+                                                    className="bg-blue-500 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all disabled:opacity-50"
+                                                >
+                                                    Review Booking →
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {bookingStep === 'review' && (
+                                        <div className="animate-modern py-6">
+                                            <h3 className="text-3xl font-black uppercase mb-12 tracking-tight italic">3. Confirm Booking</h3>
+                                            <p className="text-slate-400 uppercase font-black text-[10px] tracking-[0.3em] mb-12">Review your reservation details below.</p>
+
+                                            <div className="max-w-md mx-auto space-y-6 mb-12 text-left bg-white/5 p-8 rounded-[2.5rem] border border-white/10">
+                                                <div className="flex justify-between items-center border-b border-white/5 pb-4">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Court</span>
+                                                    <span className="font-black text-white uppercase italic">{selectedCourt?.name}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center border-b border-white/5 pb-4">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Date</span>
+                                                    <span className="font-black text-white italic">Wed, February 25, 2026</span>
+                                                </div>
+                                                <div className="flex justify-between items-center border-b border-white/5 pb-4">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Time</span>
+                                                    <span className="font-black text-white italic">{selectedTime} – {parseInt(selectedTime) + 1}:00</span>
+                                                </div>
+                                                <div className="flex justify-between items-center pt-2">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Total</span>
+                                                    <span className="text-2xl font-black text-lime-400 tracking-tighter italic">R150.00</span>
+                                                </div>
+                                            </div>
+
+                                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-10">Payment will be processed securely via <span className="text-white">Yoco</span></p>
+
+                                            <div className="flex gap-4 justify-center">
+                                                <button onClick={() => setBookingStep('court')} className="px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs border border-white/10 text-white hover:bg-white/5 transition-all">Cancel</button>
+                                                <button
+                                                    onClick={() => {
+                                                        setBookingStep('payment');
+                                                        setTimeout(() => setCheckoutStatus('success'), 2000);
+                                                    }}
+                                                    className="bg-lime-400 text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-[0_20px_40px_rgba(163,230,53,0.3)] active:scale-95"
+                                                >
+                                                    Confirm & Pay
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {bookingStep === 'payment' && (
+                                        <div className="animate-modern py-20">
+                                            {!checkoutStatus ? (
+                                                <div className="flex flex-col items-center">
+                                                    <div className="w-16 h-16 border-4 border-lime-400/20 border-t-lime-400 rounded-full animate-spin mb-8"></div>
+                                                    <h3 className="text-2xl font-black uppercase tracking-widest italic animate-pulse">Redirecting to Yoco...</h3>
+                                                    <p className="text-slate-500 mt-4 text-[10px] font-black uppercase tracking-[0.2em]">Please do not refresh your browser</p>
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col items-center">
+                                                    <div className="w-20 h-20 bg-lime-400 rounded-full flex items-center justify-center text-black text-4xl mb-8 animate-bounce">✓</div>
+                                                    <h3 className="text-4xl font-black uppercase tracking-tighter italic mb-4">Payment Successful</h3>
+                                                    <p className="text-slate-400 text-lg mb-10">Your court is locked and loaded. See you on the court!</p>
+                                                    <button onClick={() => { setBookingStep('time'); setCheckoutStatus(null); setSelectedTime(null); setSelectedCourt(null); }} className="bg-white text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all">Back to Home</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                                <p className="text-slate-600 text-[8px] font-black uppercase tracking-[0.5em]">Official Queenswood Sports Booking Portal</p>
+                            </div>
+                    </section>
+                    {/* Footer - Pretoria Destination */}
+                    <footer className="relative bg-slate-950 pt-32 pb-16 border-t border-white/5 overflow-hidden">
+                        <div className="container mx-auto px-6">
+                            <div className="grid lg:grid-cols-4 gap-16 mb-24">
+                                <div className="lg:col-span-2">
+                                    <h1 className="text-3xl font-black italic tracking-tighter uppercase mb-8">
+                                        Queenswood<span className="text-blue-500">Sports</span>
+                                    </h1>
+                                    <p className="text-slate-400 text-lg leading-relaxed max-w-md font-medium">
+                                        Pretoria's premier destination for tennis and pickleball since the 1950s. World-class facilities, expert coaching, and a welcoming community.
+                                    </p>
+                                    <div className="mt-12 flex gap-8 grayscale opacity-50">
+                                        {/* Social Links would go here */}
+                                        <div className="w-6 h-6 bg-white/20 rounded-full"></div>
+                                        <div className="w-6 h-6 bg-white/20 rounded-full"></div>
+                                        <div className="w-6 h-6 bg-white/20 rounded-full"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8">Contact Node</h5>
+                                    <div className="space-y-6 text-slate-300 font-bold text-sm">
+                                        <p className="flex items-center gap-4 hover:text-lime-400 transition-colors cursor-pointer">
+                                            <span className="text-lime-400">📍</span> Cnr Soutpansberg Rd & Engel St, Pretoria
+                                        </p>
+                                        <p className="flex items-center gap-4 hover:text-lime-400 transition-colors cursor-pointer">
+                                            <span className="text-lime-400">📞</span> +27 12 345 6789
+                                        </p>
+                                        <p className="flex items-center gap-4 hover:text-lime-400 transition-colors cursor-pointer">
+                                            <span className="text-lime-400">✉️</span> info@queenswoodtennis.co.za
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8">Location Node</h5>
+                                    <div className="rounded-3xl overflow-hidden h-48 border border-white/10 group grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl">
+                                        <iframe
+                                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3594.398066600494!2d28.2435728!3d-25.72436!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1e9561286915039f%3A0xe67f96fb0042a983!2sQueenswood%20Tennis%20Club!5e0!3m2!1sen!2sza!4v1700000000000!5m2!1sen!2sza"
+                                            className="w-full h-full border-0"
+                                            allowFullScreen=""
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                        ></iframe>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="pt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] font-black uppercase tracking-widest text-slate-600">
+                                <p>© 2026 Queenswood Sports • Established 1954</p>
+                                <div className="flex gap-12">
+                                    <a href="#" className="hover:text-white transition-colors">Privacy</a>
+                                    <a href="#" className="hover:text-white transition-colors">Terms</a>
+                                    <a href="#" className="hover:text-white transition-colors">Security</a>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
