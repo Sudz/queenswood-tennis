@@ -9,6 +9,7 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -72,7 +73,6 @@
             background: linear-gradient(to bottom, #fff 20%, rgba(255, 255, 255, 0.7));
             -webkit-background-clip: text;
             background-clip: text;
-            -webkit-text-fill-color: transparent;
             letter-spacing: -0.05em;
             filter: drop-shadow(0 0 40px rgba(0, 0, 0, 0.5));
             text-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
@@ -272,9 +272,32 @@
             transform: translateX(0);
         }
 
-        .parallax-video {
-            transform: scale(1.1) translateY(var(--p-y, 0px));
-            transition: transform 0.1s linear;
+        .mobile-menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .mobile-menu-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-title-size {
+                font-size: clamp(3rem, 12vw, 5rem);
+                line-height: 1;
+            }
         }
     </style>
 
@@ -311,6 +334,25 @@
             const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
             const [heroTilt, setHeroTilt] = useState({ x: 0, y: 0 });
             const [scrollY, setScrollY] = useState(0);
+            const [isLoggedIn, setIsLoggedIn] = useState(false);
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+            const [isProfileOpen, setIsProfileOpen] = useState(false);
+            const [liveStats, setLiveStats] = useState({ activePlayers: 12, nextEvent: 'Mixed Social @ 18:00', weather: '24°C Sunny' });
+            const [leaderboard, setLeaderboard] = useState([
+                { rank: 1, name: 'Alex M.', rating: '7.82', change: '+2' },
+                { rank: 2, name: 'Sarah J.', rating: '7.45', change: '-1' },
+                { rank: 3, name: 'Mike R.', rating: '7.12', change: '0' }
+            ]);
+            const [userProfile, setUserProfile] = useState({
+                name: 'Danielle S.',
+                utr: '6.42',
+                dupr: '4.15',
+                rank: '#12',
+                matches: [
+                    { opponent: 'Sarah J.', result: 'W 6-4, 6-2', date: 'Feb 20' },
+                    { opponent: 'Mike R.', result: 'L 4-6, 5-7', date: 'Feb 15' }
+                ]
+            });
             const videoRefs = useRef({});
             const cursorRef = useRef(null);
 
@@ -392,6 +434,108 @@
                     <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full animate-pulse"></div>
                     <div className="absolute bottom-[20%] right-[-10%] w-[30%] h-[30%] bg-lime-400/10 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
 
+                    {/* Mobile Menu Overlay */}
+                    <div className={`mobile-menu-overlay ${isMobileMenuOpen ? 'open' : ''}`}>
+                        <button
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors"
+                        >
+                            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                        <div className="h-full flex flex-col items-center justify-center gap-8">
+                            <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black uppercase tracking-tighter hover:text-lime-400 transition-colors">About</a>
+                            <a href="#membership" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black uppercase tracking-tighter hover:text-lime-400 transition-colors">Membership</a>
+                            <a href="#booking" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black uppercase tracking-tighter hover:text-lime-400 transition-colors">Book Court</a>
+                            <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black uppercase tracking-tighter text-lime-400">Pickleball Hub</a>
+                            <button
+                                onClick={() => {
+                                    setIsLoggedIn(true);
+                                    setIsMobileMenuOpen(false);
+                                }}
+                                className="mt-8 bg-white text-black px-12 py-4 rounded-full font-black text-sm uppercase tracking-widest"
+                            >
+                                {isLoggedIn ? 'Go to Q-Hub' : 'Member Login'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Member Profile Dashboard (Slide-out) */}
+                    <div className={`fixed inset-y-0 right-0 w-full sm:w-[450px] bg-slate-950 border-l border-white/10 z-[100] transform transition-transform duration-700 ease-in-out backdrop-blur-3xl bg-slate-950/90 ${isProfileOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                        <div className="h-full flex flex-col p-12 overflow-y-auto">
+                            <div className="flex justify-between items-center mb-16">
+                                <h2 className="text-3xl font-black uppercase italic tracking-tighter">My Q-Hub</h2>
+                                <button onClick={() => setIsProfileOpen(false)} className="text-slate-500 hover:text-white transition-colors">
+                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+
+                            <div className="flex items-center gap-6 mb-12">
+                                <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-blue-500 to-lime-400 p-1">
+                                    <div className="w-full h-full rounded-[1.8rem] bg-slate-950 flex items-center justify-center text-4xl">👤</div>
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black uppercase tracking-tight">{userProfile.name}</h3>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-lime-400">Queenswood Elite Member</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 mb-12">
+                                <div className="p-6 rounded-3xl bg-white/5 border border-white/10">
+                                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">UTR Rating</p>
+                                    <p className="text-3xl font-black italic text-blue-500">{userProfile.utr}</p>
+                                </div>
+                                <div className="p-6 rounded-3xl bg-white/5 border border-white/10">
+                                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">DUPR Rating</p>
+                                    <p className="text-3xl font-black italic text-lime-400">{userProfile.dupr}</p>
+                                </div>
+                            </div>
+
+                            {/* Find a Partner / Social Section */}
+                            <div className="mb-12">
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-white mb-6 p-3 bg-white/5 rounded-xl border border-white/10 text-center">Ready for a Match?</h4>
+                                <div className="p-6 rounded-3xl bg-gradient-to-br from-blue-600/20 to-lime-400/20 border border-white/10">
+                                    <p className="text-sm font-black uppercase tracking-tighter mb-4">Find a Practice Partner</p>
+                                    <p className="text-[10px] text-slate-400 leading-relaxed mb-6">Match with players at UTR {userProfile.utr} - 7.0 for a competitive session.</p>
+                                    <button className="w-full bg-white text-black py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 transition-colors">Start Matchmaking</button>
+                                </div>
+                            </div>
+
+                            <div className="mb-12">
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-6">Recent Performance</h4>
+                                <div className="space-y-4">
+                                    {userProfile.matches.map((m, i) => (
+                                        <div key={i} className="flex justify-between items-center p-4 rounded-2xl bg-white/5 border border-white/5">
+                                            <div>
+                                                <p className="text-sm font-black uppercase italic">{m.opponent}</p>
+                                                <p className="text-[9px] font-bold text-slate-500 uppercase">{m.date}</p>
+                                            </div>
+                                            <div className={`text-[10px] font-black px-3 py-1 rounded-full ${m.result.startsWith('W') ? 'bg-lime-400/10 text-lime-400' : 'bg-red-400/10 text-red-400'}`}>
+                                                {m.result}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Pro-Shop / Services Section */}
+                            <div className="mb-12">
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-6">Pro Services</h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <button className="flex flex-col items-center justify-center p-6 rounded-3xl bg-white/5 border border-white/5 hover:border-blue-500/50 transition-all group">
+                                        <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">🎾</span>
+                                        <span className="text-[8px] font-black uppercase tracking-widest text-white">Restring</span>
+                                    </button>
+                                    <button className="flex flex-col items-center justify-center p-6 rounded-3xl bg-white/5 border border-white/5 hover:border-lime-400/50 transition-all group">
+                                        <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">🎒</span>
+                                        <span className="text-[8px] font-black uppercase tracking-widest text-white">Buy Gear</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button className="mt-auto w-full bg-lime-400 text-black py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-2xl shadow-lime-400/20">Manage Membership</button>
+                        </div>
+                    </div>
+
                     {/* Top Bar - 2026 Floating Island */}
                     <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 px-8 py-3 glass-island rounded-full flex justify-between items-center shadow-2xl transition-all duration-500 hover:w-[98%]">
                         <div className="flex items-center gap-12">
@@ -405,7 +549,30 @@
                                 <a href="#" className={`transition-all hover:tracking-[0.3em] duration-300 ${activeSport === 'Pickleball' ? 'text-lime-400 underline underline-offset-8' : 'hover:text-white'}`}>Pickleball Hub</a>
                             </div>
                         </div>
-                        <button className="hidden md:block bg-white text-black px-8 py-2.5 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 hover:scale-105 transition-all active:scale-95 shadow-xl shadow-white/10">Member Login</button>
+                        <div className="flex items-center gap-4">
+                            {isLoggedIn ? (
+                                <button
+                                    onClick={() => setIsProfileOpen(true)}
+                                    className="hidden md:flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-2.5 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all font-primary"
+                                >
+                                    <span className="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
+                                    {userProfile.name}
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => setIsLoggedIn(true)}
+                                    className="hidden md:block bg-white text-black px-8 py-2.5 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 hover:scale-105 transition-all active:scale-95 shadow-xl shadow-white/10"
+                                >
+                                    Member Login
+                                </button>
+                            )}
+                            <button
+                                onClick={() => setIsMobileMenuOpen(true)}
+                                className="lg:hidden text-white p-2"
+                            >
+                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                            </button>
+                        </div>
                     </nav>
 
                     {/* Hero Section */}
@@ -446,8 +613,8 @@
                                         <span className="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
                                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-lime-400">Elite 2026 Season</span>
                                     </div>
-                                    <h1 className="text-6xl md:text-8xl lg:text-[180px] font-black leading-[0.8] tracking-tighter mb-8 italic text-hero-mask relative shake-impact ace-strobe">
-                                        <span className="block relative">
+                                    <h1 className="hero-title-size text-6xl md:text-8xl lg:text-[180px] font-black leading-[0.8] tracking-tighter mb-8 italic text-hero-mask relative shake-impact ace-strobe">
+                                        <span className="block relative text-lime-400">
                                             {renderAnimatedText("READY TO", "toss")}
                                         </span>
                                         <span className="block relative text-lime-400 drop-shadow-[0_0_50px_rgba(163,230,53,0.5)]">
@@ -565,6 +732,29 @@
                                     </div>
                                 </div>
 
+                                {/* Q-Leagues Leaderboard Item */}
+                                <div className="md:col-span-2 bento-card rounded-[2.5rem] p-10 flex flex-col justify-between group overflow-hidden relative">
+                                    <div className="flex justify-between items-center relative z-10 mb-8">
+                                        <h4 className="text-3xl font-black uppercase italic tracking-tighter">Q-Leaderboard</h4>
+                                        <span className="text-[8px] font-bold text-lime-400 border border-lime-400/30 px-3 py-1 rounded-full uppercase tracking-widest">Season 01</span>
+                                    </div>
+                                    <div className="space-y-4 relative z-10">
+                                        {leaderboard.map((player) => (
+                                            <div key={player.rank} className="flex justify-between items-center pb-4 border-b border-white/5">
+                                                <div className="flex items-center gap-4">
+                                                    <span className="text-xl font-black italic text-slate-600">#{player.rank.toString().padStart(2, '0')}</span>
+                                                    <span className="text-lg font-black uppercase tracking-tight">{player.name}</span>
+                                                </div>
+                                                <div className="flex items-center gap-6">
+                                                    <span className="text-xs font-black italic text-lime-400">{player.rating}</span>
+                                                    <span className={`text-[9px] font-black ${player.change.startsWith('+') ? 'text-blue-400' : 'text-slate-500'}`}>{player.change}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <button className="mt-8 text-white/40 hover:text-white font-black uppercase tracking-widest text-[9px] text-right transition-colors">Details & Full Ladder →</button>
+                                </div>
+
                                 <div className="md:col-span-2 bento-card rounded-[2.5rem] p-12 flex flex-col justify-center group overflow-hidden relative">
                                     <div className="absolute inset-0 bg-lime-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                                     <div className="flex items-center gap-10 relative z-10">
@@ -573,6 +763,37 @@
                                             <h4 className="text-3xl font-black uppercase tracking-tight group-hover:text-lime-400 transition-colors">Social Dinks</h4>
                                             <p className="text-slate-500 font-medium mt-2 text-lg">Every Thursday from 18:00. <br />R60 visitors. All levels welcome.</p>
                                         </div>
+                                    </div>
+                                </div>
+
+                                {/* Live from the Courts Bento Item */}
+                                <div className="bento-card rounded-[2.5rem] p-10 flex flex-col justify-between group relative overflow-hidden">
+                                    <video
+                                        className="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none"
+                                        src="https://player.vimeo.com/external/370331493.sd.mp4?s=7b23158f94e69da598bc36028f892a08832a8a81&profile_id=139&oauth2_token_id=57447761"
+                                        muted loop playsInline autoPlay
+                                    />
+                                    <div className="absolute top-0 right-0 p-6">
+                                        <div className="flex items-center gap-2 px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-red-500">Live</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 className="text-lg font-black uppercase tracking-widest text-white/40 mb-2">Club Status</h4>
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-end">
+                                                <span className="text-3xl font-black italic text-white">{liveStats.activePlayers}</span>
+                                                <span className="text-[10px] font-bold text-slate-500 uppercase">On Court</span>
+                                            </div>
+                                            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                                                <div className="h-full bg-lime-400 w-3/4 animate-pulse"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-6">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-lime-400 mb-1">Next Up</p>
+                                        <p className="text-sm font-bold text-white uppercase italic">{liveStats.nextEvent}</p>
                                     </div>
                                 </div>
 
