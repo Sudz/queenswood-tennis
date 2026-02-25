@@ -344,16 +344,24 @@
                     setMousePos({ x: e.clientX, y: e.clientY });
 
                     // Hero specific tilt logic
-                    const hero = document.getElementById('hero');
-                    if (hero) {
-                        const rect = hero.getBoundingClientRect();
-                        const x = (e.clientX - rect.left) / rect.width - 0.5;
-                        const y = (e.clientY - rect.top) / rect.height - 0.5;
-                        setHeroTilt({ x: x * 10, y: y * -10 });
-                    }
+                    const x = (e.clientX - window.innerWidth / 2) / 50;
+                    const y = (e.clientY - window.innerHeight / 2) / 50;
+                    setHeroTilt({ x, y: -y });
                 };
                 window.addEventListener('mousemove', handleMouseMove);
                 return () => window.removeEventListener('mousemove', handleMouseMove);
+            }, []);
+
+            // Handle Yoco Redirect Status
+            useEffect(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const status = urlParams.get('status');
+                if (status) {
+                    setCheckoutStatus(status);
+                    setBookingStep('payment');
+                    // Clean up URL without refreshing
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
             }, []);
 
             const triggerLoad = (id) => {
@@ -830,9 +838,29 @@
                                             <div className="flex gap-4 justify-center">
                                                 <button onClick={() => setBookingStep('court')} className="px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs border border-white/10 text-white hover:bg-white/5 transition-all">Cancel</button>
                                                 <button
-                                                    onClick={() => {
+                                                    onClick={async () => {
                                                         setBookingStep('payment');
-                                                        setTimeout(() => setCheckoutStatus('success'), 2000);
+                                                        try {
+                                                            const response = await fetch('https://SJR_SUPABASE_ID.supabase.co/functions/v1/create-yoco-checkout', {
+                                                                method: 'POST',
+                                                                headers: { 'Content-Type': 'application/json' },
+                                                                body: JSON.stringify({
+                                                                    court: selectedCourt,
+                                                                    time: selectedTime,
+                                                                    sport: activeSport,
+                                                                    userEmail: 'anonymous@example.com' // Placeholder
+                                                                })
+                                                            });
+                                                            const data = await response.json();
+                                                            if (data.redirectUrl) {
+                                                                window.location.href = data.redirectUrl;
+                                                            } else {
+                                                                throw new Error(data.error || 'Failed to initialize checkout');
+                                                            }
+                                                        } catch (err) {
+                                                            console.error(err);
+                                                            setCheckoutStatus('failure');
+                                                        }
                                                     }}
                                                     className="bg-lime-400 text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-[0_20px_40px_rgba(163,230,53,0.3)] active:scale-95"
                                                 >
