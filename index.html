@@ -393,8 +393,16 @@
             const [leaderboard, setLeaderboard] = useState([
                 { rank: 1, name: 'Alex M.', rating: '7.82', change: '+2' },
                 { rank: 2, name: 'Sarah J.', rating: '7.45', change: '-1' },
-                { rank: 3, name: 'Mike R.', rating: '7.12', change: '0' }
+                { rank: 3, name: 'Mike R.', rating: '7.12', change: '0' },
+                { rank: 4, name: 'Xander V.', rating: '7.08', change: '+3' },
+                { rank: 5, name: 'Lena K.', rating: '6.95', change: '+1' },
+                { rank: 6, name: 'David W.', rating: '6.82', change: '-2' },
+                { rank: 7, name: 'Elena S.', rating: '6.74', change: '0' },
+                { rank: 8, name: 'Chris P.', rating: '6.65', change: '+4' },
+                { rank: 9, name: 'Julia T.', rating: '6.52', change: '-1' },
+                { rank: 10, name: 'Mark B.', rating: '6.45', change: '+2' }
             ]);
+            const [regMode, setRegMode] = useState(null); // 'membership', 'league', null
             const [userProfile, setUserProfile] = useState({
                 name: 'Danielle S.',
                 utr: '6.42',
@@ -843,7 +851,7 @@
                                     <h4 className="text-5xl font-black mb-4 uppercase tracking-tighter group-hover:text-lime-400 transition-all relative z-10">Queenswood League</h4>
                                     <p className="text-slate-400 font-medium leading-relaxed max-w-md relative z-10 text-xl">Join our Level-Based competitive engine. Verified UTR play, weekly match-ups, and the elite Queenswood Ladder starting March 2026.</p>
                                     <div className="mt-8 flex gap-4 relative z-10 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                                        <button className="bg-white text-black px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 transition-colors shadow-2xl">Register for Winter Open</button>
+                                        <button onClick={() => setRegMode('league')} className="bg-white text-black px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 transition-colors shadow-2xl">Register for Winter Open</button>
                                     </div>
                                 </div>
 
@@ -853,15 +861,15 @@
                                         <h4 className="text-3xl font-black uppercase italic tracking-tighter">Queenswood Elite Leaderboard</h4>
                                         <span className="text-[8px] font-bold text-lime-400 border border-lime-400/30 px-3 py-1 rounded-full uppercase tracking-widest">Season 01</span>
                                     </div>
-                                    <div className="space-y-4 relative z-10">
+                                    <div className="space-y-3 relative z-10 max-h-[400px] overflow-y-auto no-scrollbar pr-2">
                                         {leaderboard.map((player) => (
-                                            <div key={player.rank} className="flex justify-between items-center pb-4 border-b border-white/5">
+                                            <div key={player.rank} className="flex justify-between items-center pb-3 border-b border-white/5 last:border-0">
                                                 <div className="flex items-center gap-4">
-                                                    <span className="text-xl font-black italic text-slate-600">#{player.rank.toString().padStart(2, '0')}</span>
-                                                    <span className="text-lg font-black uppercase tracking-tight">{player.name}</span>
+                                                    <span className={`text-lg font-black italic ${player.rank <= 3 ? 'text-lime-400' : 'text-slate-600'}`}>#{player.rank.toString().padStart(2, '0')}</span>
+                                                    <span className="text-base font-black uppercase tracking-tight">{player.name}</span>
                                                 </div>
                                                 <div className="flex items-center gap-6">
-                                                    <span className="text-xs font-black italic text-lime-400">{player.rating}</span>
+                                                    <span className="text-xs font-black italic text-white/60">{player.rating}</span>
                                                     <span className={`text-[9px] font-black ${player.change.startsWith('+') ? 'text-blue-400' : 'text-slate-500'}`}>{player.change}</span>
                                                 </div>
                                             </div>
@@ -1014,7 +1022,7 @@
                                         <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest bg-slate-50 p-3 rounded-2xl"><span className="text-lime-500 scale-125">✓</span> High-FPS Performance Tracking</div>
                                         <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest bg-slate-50 p-3 rounded-2xl"><span className="text-lime-500 scale-125">✓</span> Guest Access Pass (2/month)</div>
                                     </div>
-                                    <button className="mt-auto w-full bg-black text-white py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-lime-400 hover:text-black transition-all duration-300 shadow-2xl">Start Professional Journey</button>
+                                    <button onClick={() => setRegMode('membership')} className="mt-auto w-full bg-black text-white py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-lime-400 hover:text-black transition-all duration-300 shadow-2xl">Start Professional Journey</button>
                                 </div>
 
                                 {/* Masters Plan */}
@@ -1031,7 +1039,7 @@
                                         <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-lime-400">✓</span> League & Mixed Participation</div>
                                         <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-lime-400">✓</span> Clubhouse Performance Perks</div>
                                     </div>
-                                    <button className="mt-auto w-full bg-white/5 border border-white/10 text-white py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all">Sign Up</button>
+                                    <button onClick={() => setRegMode('membership')} className="mt-auto w-full bg-white/5 border border-white/10 text-white py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all">Sign Up</button>
                                 </div>
 
                                 {/* Junior Plan */}
@@ -1048,7 +1056,7 @@
                                         <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-blue-500">✓</span> Competitive Ladder Seed</div>
                                         <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-blue-500">✓</span> Performance Analytics Node</div>
                                     </div>
-                                    <button className="mt-auto w-full bg-white/5 border border-white/10 text-white py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all">Apply for Academy</button>
+                                    <button onClick={() => setRegMode('membership')} className="mt-auto w-full bg-white/5 border border-white/10 text-white py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all">Apply for Academy</button>
                                 </div>
                             </div>
                         </div>
@@ -1083,30 +1091,36 @@
 
                                     {bookingStep === 'time' && (
                                         <div className="animate-modern">
-                                            <h3 className="text-3xl font-black uppercase mb-8 tracking-tight">1. Choose Date & Time</h3>
+                                            <div className="flex items-center justify-between mb-8">
+                                                <h3 className="text-3xl font-black uppercase tracking-tight">1. Choose Date & Time</h3>
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
+                                                    {selectedDate ? selectedDate.full : 'Select a date'}
+                                                </span>
+                                            </div>
 
                                             {/* Date Explorer */}
-                                            <div className="flex gap-4 overflow-x-auto pb-6 mb-8 no-scrollbar">
+                                            <div className="flex gap-3 overflow-x-auto pb-4 mb-8 no-scrollbar">
                                                 {getNextSevenDays().map((date) => (
                                                     <button
                                                         key={date.iso}
                                                         onClick={() => setSelectedDate(date)}
-                                                        className={`flex-shrink-0 w-24 p-5 rounded-3xl border transition-all duration-300 ${selectedDate?.iso === date.iso
-                                                            ? 'bg-lime-400 border-lime-400 text-black scale-105'
-                                                            : 'bg-white/5 border-white/10 text-slate-500 hover:border-white/20'}`}
+                                                        className={`flex-shrink-0 w-[72px] p-4 rounded-2xl border transition-all duration-300 text-center ${selectedDate?.iso === date.iso
+                                                            ? 'bg-lime-400 border-lime-400 text-black scale-105 shadow-xl shadow-lime-400/20'
+                                                            : 'bg-white/5 border-white/10 text-slate-500 hover:border-white/20 hover:text-white'}`}
                                                     >
-                                                        <p className="text-[8px] font-black uppercase tracking-widest mb-1">{date.short}</p>
-                                                        <p className="text-2xl font-black">{date.day}</p>
+                                                        <p className="text-[9px] font-black uppercase tracking-widest mb-1">{date.short}</p>
+                                                        <p className="text-2xl font-black leading-none">{date.day}</p>
                                                     </button>
                                                 ))}
                                             </div>
 
-                                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-10">
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-4">Available Time Slots</p>
+                                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 mb-10">
                                                 {['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'].map(time => (
                                                     <button
                                                         key={time}
                                                         onClick={() => setSelectedTime(time)}
-                                                        className={`py-4 rounded-2xl font-black text-[10px] tracking-widest transition-all duration-300 border ${selectedTime === time
+                                                        className={`py-3 rounded-xl font-black text-[10px] tracking-widest transition-all duration-300 border ${selectedTime === time
                                                             ? 'bg-white text-black border-white scale-105 shadow-xl'
                                                             : 'bg-white/5 text-slate-400 border-white/5 hover:bg-white/10 hover:text-white'}`}
                                                     >
@@ -1114,32 +1128,44 @@
                                                     </button>
                                                 ))}
                                             </div>
-                                            <button
-                                                onClick={() => setBookingStep('court')}
-                                                disabled={!selectedTime || !selectedDate}
-                                                className="bg-lime-400 text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all disabled:opacity-50"
-                                            >
-                                                Select Court →
-                                            </button>
+                                            <div className="flex items-center gap-4">
+                                                <button
+                                                    onClick={() => setBookingStep('court')}
+                                                    disabled={!selectedTime || !selectedDate}
+                                                    className="bg-lime-400 text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all disabled:opacity-50 shadow-xl shadow-lime-400/20"
+                                                >
+                                                    Select Court →
+                                                </button>
+                                                {(!selectedTime || !selectedDate) && <p className="text-[9px] font-black uppercase tracking-widest text-slate-600">Pick a date and time to continue</p>}
+                                            </div>
                                         </div>
                                     )}
 
                                     {bookingStep === 'court' && (
                                         <div className="animate-modern">
-                                            <h3 className="text-3xl font-black uppercase mb-8 tracking-tight">2. Select a Court</h3>
+                                            <div className="flex items-center justify-between mb-8">
+                                                <h3 className="text-3xl font-black uppercase tracking-tight">2. Select Your Arena</h3>
+                                                <div className="flex gap-3">
+                                                    <span className="flex items-center gap-1.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest">🎾 Tennis Courts 1–3</span>
+                                                    <span className="flex items-center gap-1.5 bg-lime-400/10 text-lime-400 border border-lime-400/20 px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest">🏓 Pickleball Courts 4–5</span>
+                                                </div>
+                                            </div>
                                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
                                                 {COURTS.map(court => (
                                                     <button
                                                         key={court.id}
                                                         onClick={() => setSelectedCourt(court)}
-                                                        className={`p-6 rounded-[2rem] border text-left transition-all duration-300 ${selectedCourt?.id === court.id
+                                                        className={`p-6 rounded-[2rem] border text-left transition-all duration-300 relative overflow-hidden ${selectedCourt?.id === court.id
                                                             ? 'bg-white text-black border-white shadow-2xl scale-[1.02]'
                                                             : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'}`}
                                                     >
                                                         <div className="flex justify-between items-start mb-4">
                                                             <h4 className="font-black text-lg uppercase tracking-tight">{court.name}</h4>
-                                                            <span className={`text-[8px] px-2 py-1 rounded-full font-black uppercase tracking-widest ${selectedCourt?.id === court.id ? 'bg-black text-white' : 'bg-white/10 text-slate-400'}`}>
-                                                                {court.type}
+                                                            <span className={`text-[8px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest ${court.id <= 3
+                                                                ? (selectedCourt?.id === court.id ? 'bg-blue-500 text-white' : 'bg-blue-500/10 text-blue-400')
+                                                                : (selectedCourt?.id === court.id ? 'bg-lime-500 text-black' : 'bg-lime-400/10 text-lime-400')
+                                                                }`}>
+                                                                {court.id <= 3 ? '🎾 Tennis' : '🏓 Pickleball'}
                                                             </span>
                                                         </div>
                                                         <div className="space-y-1">
@@ -1152,12 +1178,12 @@
                                                     </button>
                                                 ))}
                                             </div>
-                                            <div className="flex gap-4 justify-center">
-                                                <button onClick={() => setBookingStep('time')} className="px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs border border-white/10 text-white hover:bg-white/5 transition-all">Back</button>
+                                            <div className="flex gap-4">
+                                                <button onClick={() => setBookingStep('time')} className="px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs border border-white/10 text-white hover:bg-white/5 transition-all">← Back</button>
                                                 <button
                                                     onClick={() => setBookingStep('review')}
                                                     disabled={!selectedCourt}
-                                                    className="bg-blue-500 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all disabled:opacity-50"
+                                                    className="bg-lime-400 text-black px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all disabled:opacity-50"
                                                 >
                                                     Review Booking →
                                                 </button>
@@ -1316,6 +1342,51 @@
                             </div>
                         </div>
                     </footer >
+                    {/* Registration Modal Engine */}
+                    {regMode && (
+                        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-xl animate-modern">
+                            <div className="bg-slate-900 w-full max-w-xl rounded-[3rem] border border-white/10 p-12 relative shadow-2xl">
+                                <button onClick={() => setRegMode(null)} className="absolute top-8 right-8 text-slate-500 hover:text-white transition-colors">
+                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                                <h3 className="text-4xl font-black uppercase italic tracking-tighter mb-4 text-lime-400">{regMode === 'membership' ? 'Elevate Your Game' : 'Join the League'}</h3>
+                                <p className="text-slate-400 text-sm mb-10 uppercase tracking-widest font-black">Official Queenswood {regMode === 'membership' ? 'Membership' : 'League'} Registration</p>
+
+                                <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); alert('Registration Sent!'); setRegMode(null); }}>
+                                    <div>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Full Name</label>
+                                        <input type="text" required placeholder="John Doe" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all placeholder:text-white/10" />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <div>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Email Node</label>
+                                            <input type="email" required placeholder="john@example.com" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all placeholder:text-white/10" />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">WhatsApp Node</label>
+                                            <input type="tel" required placeholder="+27 ..." className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all placeholder:text-white/10" />
+                                        </div>
+                                    </div>
+                                    {regMode === 'membership' ? (
+                                        <div>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Select Plan</label>
+                                            <select className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all appearance-none cursor-pointer">
+                                                <option>Club Member (R350/mo)</option>
+                                                <option>Elite Pro (R850/mo)</option>
+                                                <option>Junior Ace (R150/mo)</option>
+                                            </select>
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">UTR/DUPR Rating</label>
+                                            <input type="text" placeholder="e.g. 6.5" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 font-black text-sm focus:border-lime-400 outline-none transition-all placeholder:text-white/10" />
+                                        </div>
+                                    )}
+                                    <button type="submit" className="w-full bg-lime-400 text-black py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-2xl shadow-lime-400/20">Submit Registration →</button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
                 </div >
             );
         }
