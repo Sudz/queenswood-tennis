@@ -944,7 +944,7 @@
                         </div>
                     </section>
                     {/* Footer - Pretoria Destination */}
-                    < footer className="relative bg-slate-950 pt-32 pb-16 border-t border-white/5 overflow-hidden" >
+                    <footer className="relative bg-slate-950 pt-32 pb-16 border-t border-white/5 overflow-hidden">
                         <div className="container mx-auto px-6 reveal">
                             <div className="grid lg:grid-cols-4 gap-16 mb-24">
                                 <div className="lg:col-span-2">
@@ -1000,13 +1000,18 @@
                                 </div>
                             </div>
                         </div>
-                    </footer >
-                </div >
+                    </footer>
+                </div>
             );
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        try {
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(<App />);
+        } catch (e) {
+            console.error("React Render Error:", e);
+            document.body.innerHTML = `<div style="color:white;padding:20px;background:red;"><h1>Render Error</h1><pre>${e.message}</pre></div>`;
+        }
     </script>
 </body>
 
