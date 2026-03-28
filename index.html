@@ -1157,7 +1157,7 @@
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Q-Ranking</div>
+                                                <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Queenswood Pro Rank</div>
                                                 <div className="text-3xl font-black italic text-lime-400 tracking-tighter">#04</div>
                                             </div>
                                         </div>
@@ -1185,7 +1185,7 @@
                                                 </span>
                                             </div>
                                             <p className="text-sm font-bold text-slate-300 mb-6 leading-relaxed">Match with players at UTR 6.42 - 7.0 for a competitive session.</p>
-                                            <button className="w-full bg-white text-black py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 transition-colors shadow-2xl active:scale-95">Start Matchmaking</button>
+                                            <button onClick={() => setRegMode('league')} className="w-full bg-white text-black py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 transition-colors shadow-2xl active:scale-95">Start Matchmaking</button>
                                         </div>
 
                                         {/* Light reflection effect */}
@@ -1203,33 +1203,33 @@
                     </section>
 
                     {/* Bento Grid Features Section */}
-                    <section className="bg-slate-950 py-32 px-6">
+                    <section className="bg-slate-950 py-24 lg:py-32 px-4 sm:px-6">
                         <div className="max-w-7xl mx-auto">
-                            <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8 reveal">
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6 reveal">
                                 <div>
-                                    <h3 className="text-6xl font-black uppercase italic mb-6 leading-tight tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">The {activeSport === 'Tennis' ? 'Tennis' : 'Pickleball'} <br /> <span className="text-lime-400">Revolution.</span></h3>
-                                    <p className="text-slate-500 text-lg max-w-xl font-medium">Immerse yourself in a community built on performance and progression. Level up today.</p>
+                                    <h3 className="text-5xl lg:text-6xl font-black uppercase italic mb-4 leading-tight tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">The {activeSport === 'Tennis' ? 'Tennis' : 'Pickleball'} <br /> <span className="text-lime-400">Revolution.</span></h3>
+                                    <p className="text-slate-500 text-base md:text-lg max-w-xl font-medium">Immerse yourself in a community built on performance and progression. Level up today.</p>
                                 </div>
                                 <button className="text-lime-400 font-black uppercase tracking-[0.3em] text-[10px] border-b-2 border-lime-400/20 pb-2 hover:border-lime-400 hover:tracking-[0.4em] transition-all duration-500">View All Events →</button>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-6 h-auto md:h-[700px]">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 {/* High impact Bento item */}
-                                <div className="md:col-span-2 md:row-span-2 rounded-[3.5rem] p-12 flex flex-col justify-end group overflow-hidden relative bento-card">
+                                <div className="lg:col-span-2 lg:row-span-2 rounded-[2rem] lg:rounded-[3.5rem] p-8 lg:p-12 flex flex-col justify-end group overflow-hidden relative bento-card">
                                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-blue-600/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                                    <div className="h-24 w-24 rounded-3xl bg-blue-500/10 flex items-center justify-center text-5xl mb-10 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative z-10">🏆</div>
-                                    <h4 className="text-5xl font-black mb-4 uppercase tracking-tighter group-hover:text-lime-400 transition-all relative z-10">Queenswood League</h4>
-                                    <p className="text-slate-400 font-medium leading-relaxed max-w-md relative z-10 text-xl">Join our Level-Based competitive engine. Verified UTR play, weekly match-ups, and the elite Queenswood Ladder starting March 2026.</p>
-                                    <div className="mt-8 flex gap-4 relative z-10 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                                        <button onClick={() => setRegMode('league')} className="bg-white text-black px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 transition-colors shadow-2xl">Register for Winter Open</button>
+                                    <div className="h-16 w-16 lg:h-24 lg:w-24 rounded-2xl lg:rounded-3xl bg-blue-500/10 flex items-center justify-center text-3xl lg:text-5xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative z-10">🏆</div>
+                                    <h4 className="text-4xl lg:text-5xl font-black mb-4 uppercase tracking-tighter group-hover:text-lime-400 transition-all relative z-10">Queenswood League</h4>
+                                    <p className="text-slate-400 font-medium leading-relaxed max-w-md relative z-10 text-lg lg:text-xl">Join our Level-Based competitive engine. Verified UTR play, weekly match-ups, and the elite Queenswood Ladder starting March 2026.</p>
+                                    <div className="mt-8 flex flex-col sm:flex-row gap-4 relative z-10 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:translate-y-4 lg:group-hover:translate-y-0 transition-all duration-500">
+                                        <button onClick={() => setRegMode('league')} className="bg-white text-black px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 transition-colors shadow-2xl active:scale-95 text-center">Register for Winter Open</button>
                                     </div>
                                 </div>
 
-                                {/* Q-Leagues Leaderboard Item */}
-                                <div className="md:col-span-2 bento-card rounded-[2.5rem] p-10 flex flex-col justify-between group overflow-hidden relative">
+                                {/* Leaderboard Item */}
+                                <div className="lg:col-span-1 lg:row-span-2 bento-card rounded-[2rem] lg:rounded-[3.5rem] p-8 lg:p-10 flex flex-col justify-between group overflow-hidden relative">
                                     <div className="flex justify-between items-center relative z-10 mb-8">
-                                        <h4 className="text-3xl font-black uppercase italic tracking-tighter">Queenswood Leaderboard</h4>
-                                        <span className="text-[8px] font-bold text-lime-400 border border-lime-400/30 px-3 py-1 rounded-full uppercase tracking-widest">Season 01</span>
+                                        <h4 className="text-2xl lg:text-3xl font-black uppercase italic tracking-tighter">Queenswood Leaderboard</h4>
+                                        <span className="text-[8px] font-bold text-lime-400 border border-lime-400/30 px-3 py-1 rounded-full uppercase tracking-widest flex-shrink-0 ml-2">Season 01</span>
                                     </div>
                                     {(() => {
                                         const [activeTab, setActiveTab] = React.useState('mens');
@@ -1242,24 +1242,24 @@
                                         return (
                                             <>
                                                 {/* Category tabs */}
-                                                <div className="flex gap-2 mb-6 relative z-10">
+                                                <div className="flex gap-2 mb-6 relative z-10 overflow-x-auto no-scrollbar pb-2">
                                                     {categories.map(c => (
                                                         <button key={c.key} onClick={() => setActiveTab(c.key)}
-                                                            className={`${activeTab === c.key ? 'bg-white text-black border-white' : 'text-slate-500 hover:text-white border-white/10'} text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-full border transition-all`}>
+                                                            className={`${activeTab === c.key ? 'bg-white text-black border-white' : 'text-slate-500 hover:text-white border-white/10'} text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-full border transition-all whitespace-nowrap`}>
                                                             {c.label}
                                                         </button>
                                                     ))}
                                                 </div>
                                                 {/* Player rows */}
-                                                <div className="space-y-3 relative z-10 max-h-[340px] overflow-y-auto no-scrollbar pr-2">
+                                                <div className="space-y-3 relative z-10 max-h-[300px] lg:max-h-[380px] overflow-y-auto no-scrollbar pr-2 flex-grow">
                                                     {players.map((player) => (
-                                                        <div key={player.rank} className="flex justify-between items-center pb-3 border-b border-white/5 last:border-0">
+                                                        <div key={player.rank} className="flex justify-between items-center pb-3 border-b border-white/5 last:border-0 hover:bg-white/5 p-2 -mx-2 rounded-lg transition-colors cursor-pointer">
                                                             <div className="flex items-center gap-3">
-                                                                <span className="text-sm font-black italic w-8 text-right">#{player.rank.toString().padStart(2, '0')}</span>
-                                                                <span className="text-sm font-black uppercase tracking-tight">{player.name}</span>
+                                                                <span className="text-sm font-black italic w-6 lg:w-8 text-right text-slate-500">#{player.rank.toString().padStart(2, '0')}</span>
+                                                                <span className="text-sm font-black uppercase tracking-tight text-white">{player.name}</span>
                                                                 <span className="text-xs" title={player.sport === 'tennis' ? 'Tennis' : 'Pickleball'}>{player.sport === 'tennis' ? '🎾' : '🏓'}</span>
                                                             </div>
-                                                            <div className="flex items-center gap-4">
+                                                            <div className="flex items-center gap-2 lg:gap-4">
                                                                 <span className="text-xs font-black italic text-white/60">{player.rating}</span>
                                                                 <span className="text-[9px] font-black w-6 text-right">{player.change}</span>
                                                             </div>
@@ -1269,62 +1269,27 @@
                                             </>
                                         );
                                     })()}
-                                    <button className="mt-6 text-white/40 hover:text-white font-black uppercase tracking-widest text-[9px] text-right transition-colors">Details & Full Ladder →</button>
+                                    <button className="mt-8 text-white/40 hover:text-white font-black uppercase tracking-widest text-[9px] text-right transition-colors relative z-10">Details & Full Ladder →</button>
                                 </div>
 
-                                <div className="md:col-span-2 bento-card rounded-[2.5rem] p-12 flex flex-col justify-center group overflow-hidden relative">
+                                {/* Bottom Row Features: Social, Clinics, Pro Shop */}
+                                <div className="bento-card rounded-[2rem] lg:rounded-[2.5rem] p-8 lg:p-10 flex flex-col justify-center items-center text-center group relative overflow-hidden">
                                     <div className="absolute inset-0 bg-lime-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                                    <div className="flex items-center gap-10 relative z-10">
-                                        <div className="h-20 w-20 rounded-2xl bg-white/5 flex items-center justify-center text-4xl group-hover:rotate-12 transition-transform duration-500">🎾</div>
-                                        <div>
-                                            <h4 className="text-3xl font-black uppercase tracking-tight group-hover:text-lime-400 transition-colors">Social Dinks</h4>
-                                            <p className="text-slate-500 font-medium mt-2 text-lg">Every Thursday from 18:00. <br />R60 visitors. All levels welcome.</p>
-                                        </div>
+                                    <div className="h-16 w-16 lg:h-20 lg:w-20 rounded-2xl bg-white/5 flex items-center justify-center text-3xl lg:text-4xl mb-4 lg:mb-6 group-hover:rotate-12 transition-transform duration-500 relative z-10">🎾</div>
+                                    <div className="relative z-10">
+                                        <h4 className="text-xl lg:text-2xl font-black uppercase tracking-tight group-hover:text-lime-400 transition-colors">Social Dinks</h4>
+                                        <p className="text-slate-400 font-bold mt-2 text-[11px] lg:text-sm leading-relaxed">Thu 18:00 • R60<br/>All levels welcome</p>
                                     </div>
                                 </div>
 
-                                {/* Live from the Courts Bento Item */}
-                                <div className="bento-card rounded-[2.5rem] p-10 flex flex-col justify-between group relative overflow-hidden">
-                                    <video
-                                        className="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none"
-                                        src="https://player.vimeo.com/external/370331493.sd.mp4?s=7b23158f94e69da598bc36028f892a08832a8a81&profile_id=139&oauth2_token_id=57447761"
-                                        muted loop playsInline autoPlay
-                                    />
-                                    <div className="absolute top-0 right-0 p-6 z-10 text-right">
-                                        <div className="flex items-center justify-end gap-2 px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full mb-2">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-red-500">Live</span>
-                                        </div>
-                                        <p className="text-[10px] font-black text-white/40 tracking-widest tabular-nums">
-                                            PTA: {currentTime.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-lg font-black uppercase tracking-widest text-white/40 mb-2">Club Status</h4>
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between items-end">
-                                                <span className="text-3xl font-black italic text-white">{liveStats.activePlayers}</span>
-                                                <span className="text-[10px] font-bold text-slate-500 uppercase">On Court</span>
-                                            </div>
-                                            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                                                <div className="h-full bg-lime-400 w-3/4 animate-pulse"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="mt-6">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-lime-400 mb-1">Next Up</p>
-                                        <p className="text-sm font-bold text-white uppercase italic">{liveStats.nextEvent}</p>
-                                    </div>
+                                <div className="bento-card rounded-[2rem] lg:rounded-[2.5rem] p-8 lg:p-10 flex flex-col justify-center items-center text-center group">
+                                    <div className="h-16 w-16 lg:h-20 lg:w-20 rounded-2xl bg-white/5 flex items-center justify-center text-3xl lg:text-4xl mb-4 lg:mb-6 group-hover:scale-110 transition-transform duration-500">🎓</div>
+                                    <h4 className="text-base lg:text-lg font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors duration-500">Clinics</h4>
                                 </div>
 
-                                <div className="bento-card rounded-[2.5rem] p-10 flex flex-col justify-center items-center text-center group">
-                                    <div className="h-20 w-20 rounded-2xl bg-white/5 flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-500">🎓</div>
-                                    <h4 className="text-lg font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors duration-500">Clinics</h4>
-                                </div>
-
-                                <div className="bento-card rounded-[2.5rem] p-10 flex flex-col justify-center items-center text-center group">
-                                    <div className="h-20 w-20 rounded-2xl bg-white/5 flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-500">⚡</div>
-                                    <h4 className="text-lg font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors duration-500">Pro Shop</h4>
+                                <div className="bento-card rounded-[2rem] lg:rounded-[2.5rem] p-8 lg:p-10 flex flex-col justify-center items-center text-center group">
+                                    <div className="h-16 w-16 lg:h-20 lg:w-20 rounded-2xl bg-white/5 flex items-center justify-center text-3xl lg:text-4xl mb-4 lg:mb-6 group-hover:scale-110 transition-transform duration-500">⚡</div>
+                                    <h4 className="text-base lg:text-lg font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors duration-500">Pro Shop</h4>
                                 </div>
                             </div>
                         </div>
