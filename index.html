@@ -1332,33 +1332,56 @@
                     </section>
 
                     {/* Bento Grid Features Section */}
-                    <section className="bg-slate-950 py-24 lg:py-32 px-4 sm:px-6">
-                        <div className="max-w-7xl mx-auto">
+                    <section className="bg-slate-950 py-24 lg:py-32 px-4 sm:px-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-lime-400/5 blur-[120px] rounded-full -translate-y-1/2"></div>
+                        <div className="max-w-7xl mx-auto relative z-10">
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6 reveal">
                                 <div>
-                                    <h3 className="text-5xl lg:text-6xl font-black uppercase italic mb-4 leading-tight tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">The {activeSport === 'Tennis' ? 'Tennis' : 'Pickleball'} <br /> <span className="text-lime-400">Revolution.</span></h3>
-                                    <p className="text-slate-500 text-base md:text-lg max-w-xl font-medium">Immerse yourself in a community built on performance and progression. Level up today.</p>
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-lime-400/10 rounded-full border border-lime-400/20 mb-4">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-lime-400 animate-pulse"></span>
+                                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-lime-400">Join the Community</span>
+                                    </div>
+                                    <h3 className="text-5xl lg:text-7xl font-black uppercase italic mb-6 leading-[0.85] tracking-tighter">
+                                        The {activeSport === 'Tennis' ? 'Tennis' : 'Pickleball'} <br /> 
+                                        <span className="text-lime-400 drop-shadow-[0_0_30px_rgba(163,230,53,0.3)]">Revolution.</span>
+                                    </h3>
+                                    <p className="text-slate-400 text-lg md:text-xl max-w-xl font-medium leading-relaxed">Immerse yourself in a community built on performance and progression. Level up your game today.</p>
                                 </div>
-                                <button className="text-lime-400 font-black uppercase tracking-[0.3em] text-[10px] border-b-2 border-lime-400/20 pb-2 hover:border-lime-400 hover:tracking-[0.4em] transition-all duration-500">View All Events →</button>
+                                <button className="group flex items-center gap-3 text-lime-400 font-black uppercase tracking-[0.3em] text-[10px] border-b-2 border-lime-400/10 pb-2 hover:border-lime-400 transition-all duration-500">
+                                    View All Events 
+                                    <span className="group-hover:translate-x-2 transition-transform">→</span>
+                                </button>
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                {/* High impact Bento item */}
-                                <div className="lg:col-span-2 lg:row-span-2 rounded-[2rem] lg:rounded-[3.5rem] p-8 lg:p-12 flex flex-col justify-end group overflow-hidden relative bento-card">
-                                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-blue-600/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                                    <div className="h-16 w-16 lg:h-24 lg:w-24 rounded-2xl lg:rounded-3xl bg-blue-500/10 flex items-center justify-center text-3xl lg:text-5xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative z-10">🏆</div>
-                                    <h4 className="text-4xl lg:text-5xl font-black mb-4 uppercase tracking-tighter group-hover:text-lime-400 transition-all relative z-10">Queenswood League</h4>
-                                    <p className="text-slate-400 font-medium leading-relaxed max-w-md relative z-10 text-lg lg:text-xl">Join our Level-Based competitive engine. Verified UTR play, weekly match-ups, and the elite Queenswood Ladder starting March 2026.</p>
-                                    <div className="mt-8 flex flex-col sm:flex-row gap-4 relative z-10 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:translate-y-4 lg:group-hover:translate-y-0 transition-all duration-500">
-                                        <button onClick={() => setRegMode('league')} className="bg-white text-black px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 transition-colors shadow-2xl active:scale-95 text-center">Register for Winter Open</button>
+                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:grid-rows-2">
+                                {/* High impact Bento item: League */}
+                                <div className="lg:col-span-2 lg:row-span-2 rounded-[2.5rem] lg:rounded-[3.5rem] p-8 lg:p-14 flex flex-col justify-between group overflow-hidden relative bento-card border-white/10">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                                    <div className="relative z-10">
+                                        <div className="h-14 w-14 lg:h-20 lg:w-20 rounded-2xl lg:rounded-[1.8rem] bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-3xl lg:text-4xl mb-10 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">🏆</div>
+                                        <h4 className="text-4xl lg:text-6xl font-black mb-6 uppercase tracking-tighter leading-[0.9]">Queenswood <br/>League</h4>
+                                        <p className="text-slate-400 font-medium leading-relaxed max-w-md text-lg lg:text-xl">Join our Level-Based competitive engine. Verified UTR play, weekly match-ups, and the elite Queenswood Ladder starting March 2026.</p>
+                                    </div>
+                                    <div className="mt-12 relative z-10 flex flex-col sm:flex-row gap-4">
+                                        <button onClick={() => setRegMode('league')} className="bg-white text-black px-10 py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-lime-400 transition-all shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:shadow-lime-400/20 active:scale-95">Register for Winter Open</button>
+                                        <div className="flex -space-x-3 items-center">
+                                            {[1,2,3,4].map(i => <div key={i} className="w-10 h-10 rounded-full border-4 border-slate-900 bg-slate-800 flex items-center justify-center text-[10px] font-black">👤</div>)}
+                                            <span className="ml-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">+120 Joined</span>
+                                        </div>
                                     </div>
                                 </div>
 
                                 {/* Leaderboard Item */}
-                                <div className="lg:col-span-1 lg:row-span-2 bento-card rounded-[2rem] lg:rounded-[3.5rem] p-8 lg:p-10 flex flex-col justify-between group overflow-hidden relative">
-                                    <div className="flex justify-between items-center relative z-10 mb-8">
-                                        <h4 className="text-2xl lg:text-3xl font-black uppercase italic tracking-tighter">Queenswood Leaderboard</h4>
-                                        <span className="text-[8px] font-bold text-lime-400 border border-lime-400/30 px-3 py-1 rounded-full uppercase tracking-widest flex-shrink-0 ml-2">Season 01</span>
+                                <div className="lg:col-span-2 lg:row-span-2 bento-card rounded-[2.5rem] lg:rounded-[3.5rem] p-8 lg:p-12 flex flex-col group overflow-hidden relative border-white/10">
+                                    <div className="absolute top-0 right-0 w-64 h-64 bg-lime-400/5 blur-[80px] rounded-full -translate-x-[-20%] -translate-y-[20%] group-hover:bg-lime-400/10 transition-colors"></div>
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center relative z-10 mb-10 gap-4">
+                                        <div>
+                                            <h4 className="text-3xl lg:text-4xl font-black uppercase italic tracking-tighter leading-none">Club Leaderboard</h4>
+                                            <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mt-2">Elite Power Rankings Season 01</p>
+                                        </div>
+                                        <div className="bg-lime-400/10 border border-lime-400/30 px-4 py-2 rounded-xl">
+                                            <span className="text-[10px] font-black text-lime-400 uppercase tracking-widest">Global Rank</span>
+                                        </div>
                                     </div>
                                     {(() => {
                                         const [activeTab, setActiveTab] = React.useState('mens');
@@ -1369,56 +1392,83 @@
                                         ];
                                         const players = leaderboard[activeTab] || [];
                                         return (
-                                            <>
-                                                {/* Category tabs */}
-                                                <div className="flex gap-2 mb-6 relative z-10 overflow-x-auto no-scrollbar pb-2">
+                                            <div className="flex flex-col h-full">
+                                                <div className="flex gap-2 mb-8 relative z-10">
                                                     {categories.map(c => (
                                                         <button key={c.key} onClick={() => setActiveTab(c.key)}
-                                                            className={`${activeTab === c.key ? 'bg-white text-black border-white' : 'text-slate-500 hover:text-white border-white/10'} text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-full border transition-all whitespace-nowrap`}>
+                                                            className={`${activeTab === c.key ? 'bg-white text-black shadow-lg' : 'text-slate-500 hover:text-white bg-white/5'} text-[9px] font-black uppercase tracking-widest px-6 py-3 rounded-xl transition-all whitespace-nowrap`}>
                                                             {c.label}
                                                         </button>
                                                     ))}
                                                 </div>
-                                                {/* Player rows */}
-                                                <div className="space-y-3 relative z-10 max-h-[300px] lg:max-h-[380px] overflow-y-auto no-scrollbar pr-2 flex-grow">
+                                                <div className="space-y-4 relative z-10 flex-grow pr-2 -mr-2 overflow-y-auto no-scrollbar custom-scroll">
                                                     {players.map((player) => (
-                                                        <div key={player.rank} className="flex justify-between items-center pb-3 border-b border-white/5 last:border-0 hover:bg-white/5 p-2 -mx-2 rounded-lg transition-colors cursor-pointer">
-                                                            <div className="flex items-center gap-3">
-                                                                <span className="text-sm font-black italic w-6 lg:w-8 text-right text-slate-500">#{player.rank.toString().padStart(2, '0')}</span>
-                                                                <span className="text-sm font-black uppercase tracking-tight text-white">{player.name}</span>
-                                                                <span className="text-xs" title={player.sport === 'tennis' ? 'Tennis' : 'Pickleball'}>{player.sport === 'tennis' ? '🎾' : '🏓'}</span>
+                                                        <div key={`${activeTab}-${player.rank}`} className="flex justify-between items-center group/row hover:bg-white/5 p-4 rounded-2xl transition-all cursor-pointer border border-transparent hover:border-white/5">
+                                                            <div className="flex items-center gap-5">
+                                                                <span className="text-lg font-black italic w-8 text-slate-600 group-hover/row:text-lime-400 transition-colors">#{player.rank.toString().padStart(2, '0')}</span>
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-sm font-black uppercase tracking-tight text-white">{player.name}</span>
+                                                                    <div className="flex items-center gap-2 mt-1">
+                                                                        <span className="text-[8px] font-black uppercase tracking-widest text-slate-500">{player.sport}</span>
+                                                                        <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
+                                                                        <span className="text-[8px] font-black uppercase tracking-widest text-slate-500">Active</span>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div className="flex items-center gap-2 lg:gap-4">
-                                                                <span className="text-xs font-black italic text-white/60">{player.rating}</span>
-                                                                <span className="text-[9px] font-black w-6 text-right">{player.change}</span>
+                                                            <div className="flex items-center gap-6">
+                                                                <div className="text-right">
+                                                                    <span className="block text-lg font-black italic text-white leading-none">{player.rating}</span>
+                                                                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">DRatings</span>
+                                                                </div>
+                                                                <span className={`text-[10px] font-black w-8 text-right ${player.change.startsWith('+') ? 'text-green-400' : player.change.startsWith('-') ? 'text-red-400' : 'text-slate-500'}`}>{player.change}</span>
                                                             </div>
                                                         </div>
                                                     ))}
                                                 </div>
-                                            </>
+                                                <button className="mt-8 group flex items-center justify-end gap-2 text-white/30 hover:text-white font-black uppercase tracking-widest text-[9px] transition-all relative z-10">
+                                                    Details & Full Ladder 
+                                                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                                                </button>
+                                            </div>
                                         );
                                     })()}
-                                    <button className="mt-8 text-white/40 hover:text-white font-black uppercase tracking-widest text-[9px] text-right transition-colors relative z-10">Details & Full Ladder →</button>
                                 </div>
 
-                                {/* Bottom Row Features: Social, Clinics, Pro Shop */}
-                                <div className="bento-card rounded-[2rem] lg:rounded-[2.5rem] p-8 lg:p-10 flex flex-col justify-center items-center text-center group relative overflow-hidden">
-                                    <div className="absolute inset-0 bg-lime-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                                    <div className="h-16 w-16 lg:h-20 lg:w-20 rounded-2xl bg-white/5 flex items-center justify-center text-3xl lg:text-4xl mb-4 lg:mb-6 group-hover:rotate-12 transition-transform duration-500 relative z-10">🎾</div>
-                                    <div className="relative z-10">
-                                        <h4 className="text-xl lg:text-2xl font-black uppercase tracking-tight group-hover:text-lime-400 transition-colors">Social Drinks</h4>
-                                        <p className="text-slate-400 font-bold mt-2 text-[11px] lg:text-sm leading-relaxed">Thu 18:00 • R60<br/>All levels welcome</p>
+                                {/* Bottom Cards: Social, Clinics, Pro Shop */}
+                                <div className="lg:col-span-1 bento-card rounded-[2rem] lg:rounded-[2.5rem] p-8 lg:p-10 flex flex-col justify-between group relative border-white/10 hover:border-lime-400">
+                                    <div className="flex justify-between items-start mb-6">
+                                        <div className="h-12 w-12 rounded-xl bg-lime-400/10 flex items-center justify-center text-2xl group-hover:scale-110 group-hover:rotate-12 transition-all">🎾</div>
+                                        <div className="px-3 py-1 bg-blue-500/10 rounded-full border border-blue-500/20">
+                                            <span className="text-[7px] font-black uppercase tracking-widest text-blue-400">Weekly Social</span>
+                                        </div>
                                     </div>
+                                    <div className="mb-6">
+                                        <h4 className="text-2xl font-black uppercase tracking-tight mb-2">Social Drinks</h4>
+                                        <p className="text-slate-400 font-bold text-[11px] leading-relaxed">Thu 18:00 • R60<br/>All levels welcome</p>
+                                    </div>
+                                    <button className="w-full py-4 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest group-hover:bg-white group-hover:text-black transition-all">Join Session</button>
                                 </div>
 
-                                <div className="bento-card rounded-[2rem] lg:rounded-[2.5rem] p-8 lg:p-10 flex flex-col justify-center items-center text-center group">
-                                    <div className="h-16 w-16 lg:h-20 lg:w-20 rounded-2xl bg-white/5 flex items-center justify-center text-3xl lg:text-4xl mb-4 lg:mb-6 group-hover:scale-110 transition-transform duration-500">🎓</div>
-                                    <h4 className="text-base lg:text-lg font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors duration-500">Clinics</h4>
+                                <div className="lg:col-span-1 bento-card rounded-[2rem] lg:rounded-[2.5rem] p-8 lg:p-10 flex flex-col justify-between group relative border-white/10 hover:border-blue-500">
+                                    <div className="flex justify-between items-start mb-6">
+                                        <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-all">🎓</div>
+                                    </div>
+                                    <div className="mb-6">
+                                        <h4 className="text-2xl font-black uppercase tracking-tight mb-2">Clinics</h4>
+                                        <p className="text-slate-400 font-bold text-[11px] leading-relaxed">Pro-Led Group Training<br/>Intermediate & Advanced</p>
+                                    </div>
+                                    <button className="w-full py-4 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest group-hover:bg-blue-500 group-hover:text-white group-hover:border-blue-500 transition-all">Register Now</button>
                                 </div>
 
-                                <div className="bento-card rounded-[2rem] lg:rounded-[2.5rem] p-8 lg:p-10 flex flex-col justify-center items-center text-center group">
-                                    <div className="h-16 w-16 lg:h-20 lg:w-20 rounded-2xl bg-white/5 flex items-center justify-center text-3xl lg:text-4xl mb-4 lg:mb-6 group-hover:scale-110 transition-transform duration-500">⚡</div>
-                                    <h4 className="text-base lg:text-lg font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors duration-500">Pro Shop</h4>
+                                <div className="lg:col-span-2 bento-card rounded-[2.5rem] p-10 flex items-center gap-10 group relative border-white/10">
+                                    <div className="h-20 w-20 rounded-3xl bg-white/5 flex items-center justify-center text-5xl group-hover:scale-110 group-hover:rotate-6 transition-all">⚡</div>
+                                    <div className="flex-grow">
+                                        <h4 className="text-3xl font-black uppercase tracking-tight mb-2">Pro Shop</h4>
+                                        <p className="text-slate-400 font-bold text-sm leading-relaxed max-w-sm">Premium racket re-stringing, elite gear, and the official Queenswood 2026 Collection.</p>
+                                    </div>
+                                    <button className="bg-white/5 hover:bg-white hover:text-black p-6 rounded-2xl transition-all">
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                    </button>
                                 </div>
                             </div>
                         </div>
