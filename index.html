@@ -8,6 +8,7 @@
     <meta name="description"
         content="Queenswood Tennis & Pickleball Club — Pretoria's premier racket sports destination since the 1950s. Book courts, join leagues, and elevate your game.">
     <title>Queenswood Sports Club | Elite Tennis & Pickleball — Pretoria</title>
+    <link rel="icon" type="image/png" href="logo.png" />
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -648,7 +649,7 @@
 
         // ── Club Name Rotation Data ────────────────────────────────────────────
         const CLUB_NAMES = [
-            { label: 'Queenswood Tennis Club', color: '#3b82f6', accent: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/30', icon: '🎾' },
+            { label: 'Queenswood Tennis Club', color: '#3b82f6', accent: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/30', icon: <img src="logo.png" className="w-5 sm:w-6 h-5 sm:h-6 inline-block rounded-full drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" alt="Logo" /> },
             { label: 'Queenswood Pickleball Club', color: '#a3e635', accent: 'text-lime-400', bg: 'bg-lime-400/10', border: 'border-lime-400/30', icon: '🏓' },
             { label: 'Queenswood Sports Club', color: '#f59e0b', accent: 'text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-400/30', icon: '⚡' },
         ];
@@ -1301,9 +1302,12 @@
                         <div className="max-w-7xl mx-auto relative z-10 reveal">
                             <div className="grid lg:grid-cols-2 gap-20 items-center">
                                 <div className="animate-modern">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 rounded-full border border-blue-500/20 mb-6">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-                                        <span className="text-[8px] font-black uppercase tracking-[0.4em] text-blue-400">Established 1954</span>
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-10">
+                                        <img src="logo.png" alt="Queenswood Sports Logo" className="w-20 h-20 object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.1)] rounded-full border border-white/5" />
+                                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 rounded-full border border-blue-500/20">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                                            <span className="text-[8px] font-black uppercase tracking-[0.4em] text-blue-400">Established 1957</span>
+                                        </div>
                                     </div>
                                     <h3 className="text-6xl sm:text-7xl font-black uppercase mb-10 leading-[0.8] tracking-tighter">
                                         HERITAGE <br />
