@@ -1,10 +1,13 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en-ZA">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Queenswood Tennis & Pickleball | UTR Clone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="theme-color" content="#020617">
+    <meta name="description"
+        content="Queenswood Tennis & Pickleball Club — Pretoria's premier racket sports destination since the 1950s. Book courts, join leagues, and elevate your game.">
+    <title>Queenswood Sports Club | Elite Tennis & Pickleball — Pretoria</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -349,6 +352,143 @@
                 line-height: 1;
             }
         }
+
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .hero-title-size {
+                font-size: clamp(2.2rem, 10vw, 3.5rem);
+                line-height: 0.95;
+            }
+
+            .bento-card {
+                border-radius: 1.5rem;
+            }
+
+            .bento-card:hover {
+                transform: none;
+            }
+
+            nav.glass-island {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+
+            .container {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            /* Prevent horizontal scroll on mobile */
+            body {
+                overflow-x: hidden;
+                width: 100%;
+                position: relative;
+            }
+        }
+
+        /* Better scrolling on mobile */
+        .overflow-x-auto {
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .overflow-x-auto>* {
+            scroll-snap-align: start;
+        }
+
+        /* Prevent background scroll when mobile menu is open */
+        body.menu-open {
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Hide scrollbar but keep scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Smooth touch scrolling for Android */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        section,
+        div {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Safe area for notched phones */
+        body {
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+
+        /* Club name transition */
+        @keyframes club-fade {
+            0% {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Booking step slide animation */
+        @keyframes slide-in-right {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slide-in-left {
+            from {
+                opacity: 0;
+                transform: translateX(-40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide-in {
+            animation: slide-in-right 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        .slide-back {
+            animation: slide-in-left 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        /* Time slot grid on very small screens */
+        @media (max-width: 400px) {
+            .time-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+        }
+
+        /* Sticky booking bottom bar */
+        .booking-sticky-bar {
+            position: sticky;
+            bottom: 0;
+            z-index: 20;
+            padding: 16px 0 calc(16px + env(safe-area-inset-bottom, 0));
+            background: linear-gradient(to top, rgba(2, 6, 23, 0.98) 60%, transparent);
+        }
     </style>
 
 </head>
@@ -376,32 +516,32 @@
         // ── Registration Form Component ────────────────────────────────────────────
         function RegistrationForm({ regMode, setRegMode }) {
             const PLANS = [
-                { key: 'adult',   label: 'Adult Pro',  monthly: 150, annual: 120 },
-                { key: 'masters', label: 'Masters',    monthly: 120, annual:  95 },
-                { key: 'junior',  label: 'Junior Ace', monthly:  75, annual:  60 },
+                { key: 'adult', label: 'Adult Pro', monthly: 150, annual: 120 },
+                { key: 'masters', label: 'Masters', monthly: 120, annual: 95 },
+                { key: 'junior', label: 'Junior Ace', monthly: 75, annual: 60 },
             ];
-            const [selPlan,    setSelPlan]    = React.useState('adult');
+            const [selPlan, setSelPlan] = React.useState('adult');
             const [selBilling, setSelBilling] = React.useState('monthly');
-            const [loading,    setLoading]    = React.useState(false);
+            const [loading, setLoading] = React.useState(false);
 
-            const activePlan  = PLANS.find(p => p.key === selPlan);
-            const monthlyFee  = selBilling === 'annual' ? activePlan.annual : activePlan.monthly;
-            const firstTotal  = monthlyFee + 90;
+            const activePlan = PLANS.find(p => p.key === selPlan);
+            const monthlyFee = selBilling === 'annual' ? activePlan.annual : activePlan.monthly;
+            const firstTotal = monthlyFee + 90;
 
             const handleSubmit = async (e) => {
                 e.preventDefault();
                 setLoading(true);
                 const fd = new FormData(e.target);
                 const payload = {
-                    plan:         regMode === 'league' ? 'league' : selPlan,
+                    plan: regMode === 'league' ? 'league' : selPlan,
                     billingCycle: selBilling,
-                    fullName:     fd.get('fullName'),
-                    email:        fd.get('email'),
-                    whatsapp:     fd.get('whatsapp'),
-                    utrDupr:      fd.get('utrDupr') || null,
+                    fullName: fd.get('fullName'),
+                    email: fd.get('email'),
+                    whatsapp: fd.get('whatsapp'),
+                    utrDupr: fd.get('utrDupr') || null,
                 };
                 try {
-                    const res  = await fetch('https://SJR_SUPABASE_ID.supabase.co/functions/v1/create-membership-checkout', {
+                    const res = await fetch('https://SJR_SUPABASE_ID.supabase.co/functions/v1/create-membership-checkout', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload),
@@ -451,7 +591,7 @@
                                 <div className="grid grid-cols-3 gap-3">
                                     {PLANS.map(p => (
                                         <button key={p.key} type="button" onClick={() => setSelPlan(p.key)}
-                                            className={py-4 px-3 rounded-2xl border font-black text-[10px] uppercase tracking-wider transition-all }>
+                                            className={`${selPlan === p.key ? 'bg-white text-black border-white' : 'text-slate-500 hover:text-white border-white/10'} py-4 px-3 rounded-2xl border font-black text-[10px] uppercase tracking-wider transition-all`}>
                                             {p.label}
                                         </button>
                                     ))}
@@ -462,7 +602,7 @@
                                 <div className="grid grid-cols-2 gap-3">
                                     {['monthly', 'annual'].map(b => (
                                         <button key={b} type="button" onClick={() => setSelBilling(b)}
-                                            className={py-4 rounded-2xl border font-black text-[10px] uppercase tracking-wider transition-all }>
+                                            className={`${selBilling === b ? 'bg-white text-black border-white' : 'text-slate-500 hover:text-white border-white/10'} py-4 rounded-2xl border font-black text-[10px] uppercase tracking-wider transition-all`}>
                                             {b}{b === 'annual' ? ' (Save 20%)' : ''}
                                         </button>
                                     ))}
@@ -506,14 +646,51 @@
             );
         }
 
+        // ── Club Name Rotation Data ────────────────────────────────────────────
+        const CLUB_NAMES = [
+            { label: 'Queenswood Tennis Club', color: '#3b82f6', accent: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/30', icon: '🎾' },
+            { label: 'Queenswood Pickleball Club', color: '#a3e635', accent: 'text-lime-400', bg: 'bg-lime-400/10', border: 'border-lime-400/30', icon: '🏓' },
+            { label: 'Queenswood Sports Club', color: '#f59e0b', accent: 'text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-400/30', icon: '⚡' },
+        ];
+
+        // ── Coach Cards Data ────────────────────────────────────────────
+        const COACHES = [
+            {
+                name: 'Carla Smith',
+                title: 'Head Tennis Coach',
+                image: 'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?auto=format&fit=crop&q=80&w=150&h=150',
+                specialty: 'Singles Strategy & Power Serve',
+                rating: '9.2',
+                experience: '12 yrs',
+                certifications: ['ITF Level 3', 'TSA Elite Coach'],
+                nextSession: 'Tomorrow 07:00',
+                rate: 'R450/hr',
+                wins: '340+',
+                bio: 'Former WTA-ranked player bringing world-class technique to Queenswood.',
+            },
+            {
+                name: 'Joe Ladder',
+                title: 'Pickleball & Doubles Specialist',
+                image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150',
+                specialty: 'Doubles Tactics & Net Play',
+                rating: '8.7',
+                experience: '8 yrs',
+                certifications: ['PPR Certified', 'TSA Coach'],
+                nextSession: 'Today 16:00',
+                rate: 'R350/hr',
+                wins: '210+',
+                bio: 'Pickleball pioneer in SA, transforming club play with competitive edge.',
+            },
+        ];
+
         function App() {
             const [activeSport, setActiveSport] = useState('Pickleball');
             const [loadedSports, setLoadedSports] = useState(['Pickleball']);
             const [billingCycle, setBillingCycle] = useState('monthly');
             const [selectedTime, setSelectedTime] = useState(null);
             const [selectedCourt, setSelectedCourt] = useState(null);
-            const [bookingStep, setBookingStep] = useState('time'); // 'time', 'court', 'review', 'payment'
-            const [checkoutStatus, setCheckoutStatus] = useState(null); // null, 'success', 'cancel'
+            const [bookingStep, setBookingStep] = useState('time');
+            const [checkoutStatus, setCheckoutStatus] = useState(null);
             const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
             const [heroTilt, setHeroTilt] = useState({ x: 0, y: 0 });
             const [scrollY, setScrollY] = useState(0);
@@ -523,45 +700,47 @@
             const [isProfileOpen, setIsProfileOpen] = useState(false);
             const [currentTime, setCurrentTime] = useState(new Date());
             const [liveStats, setLiveStats] = useState({ activePlayers: 12, nextEvent: 'Mixed Social @ 18:00', weather: '24°C Sunny' });
+            const [clubNameIdx, setClubNameIdx] = useState(0);
+            const [showSignInModal, setShowSignInModal] = useState(false);
+            const [signInForBooking, setSignInForBooking] = useState(false);
             const [leaderboard] = useState({
                 mens: [
-                    { rank: 1, name: 'Xander van Zyl',  rating: '7.82', change: '+2', sport: 'tennis' },
-                    { rank: 2, name: 'Brendan Louw',    rating: '7.65', change: '+1', sport: 'tennis' },
-                    { rank: 3, name: 'Marco Ferreira',  rating: '7.44', change: '0',  sport: 'tennis' },
-                    { rank: 4, name: 'Jaco Pretorius',  rating: '7.21', change: '-1', sport: 'tennis' },
-                    { rank: 5, name: 'Keanu Dlamini',   rating: '7.08', change: '+3', sport: 'tennis' },
-                    { rank: 6, name: 'Ryan Nkosi',      rating: '6.97', change: '-2', sport: 'tennis' },
-                    { rank: 7, name: 'Tshego Molefe',   rating: '6.84', change: '+1', sport: 'tennis' },
-                    { rank: 8, name: 'Andre du Plessis',rating: '6.72', change: '0',  sport: 'pickleball' },
-                    { rank: 9, name: 'Kyle Botha',      rating: '6.61', change: '+4', sport: 'pickleball' },
+                    { rank: 1, name: 'Xander van Zyl', rating: '7.82', change: '+2', sport: 'tennis' },
+                    { rank: 2, name: 'Brendan Louw', rating: '7.65', change: '+1', sport: 'tennis' },
+                    { rank: 3, name: 'Marco Ferreira', rating: '7.44', change: '0', sport: 'tennis' },
+                    { rank: 4, name: 'Jaco Pretorius', rating: '7.21', change: '-1', sport: 'tennis' },
+                    { rank: 5, name: 'Keanu Dlamini', rating: '7.08', change: '+3', sport: 'tennis' },
+                    { rank: 6, name: 'Ryan Nkosi', rating: '6.97', change: '-2', sport: 'tennis' },
+                    { rank: 7, name: 'Tshego Molefe', rating: '6.84', change: '+1', sport: 'tennis' },
+                    { rank: 8, name: 'Andre du Plessis', rating: '6.72', change: '0', sport: 'pickleball' },
+                    { rank: 9, name: 'Kyle Botha', rating: '6.61', change: '+4', sport: 'pickleball' },
                     { rank: 10, name: 'Sipho Mahlangu', rating: '6.48', change: '-1', sport: 'pickleball' }
                 ],
                 womens: [
-                    { rank: 1, name: 'Danielle Steyn',  rating: '7.95', change: '+3', sport: 'tennis' },
+                    { rank: 1, name: 'Danielle Steyn', rating: '7.95', change: '+3', sport: 'tennis' },
                     { rank: 2, name: 'Liesl van der Berg', rating: '7.71', change: '0', sport: 'tennis' },
-                    { rank: 3, name: 'Amahle Zulu',     rating: '7.52', change: '+1', sport: 'tennis' },
-                    { rank: 4, name: 'Carina Joubert',  rating: '7.34', change: '-1', sport: 'tennis' },
-                    { rank: 5, name: 'Nikita Patel',    rating: '7.18', change: '+2', sport: 'tennis' },
-                    { rank: 6, name: 'Yolandi Coetzee', rating: '7.05', change: '0',  sport: 'tennis' },
-                    { rank: 7, name: 'Fatima Essop',    rating: '6.93', change: '-2', sport: 'tennis' },
+                    { rank: 3, name: 'Amahle Zulu', rating: '7.52', change: '+1', sport: 'tennis' },
+                    { rank: 4, name: 'Carina Joubert', rating: '7.34', change: '-1', sport: 'tennis' },
+                    { rank: 5, name: 'Nikita Patel', rating: '7.18', change: '+2', sport: 'tennis' },
+                    { rank: 6, name: 'Yolandi Coetzee', rating: '7.05', change: '0', sport: 'tennis' },
+                    { rank: 7, name: 'Fatima Essop', rating: '6.93', change: '-2', sport: 'tennis' },
                     { rank: 8, name: 'Refilwe Sithole', rating: '6.79', change: '+1', sport: 'pickleball' },
-                    { rank: 9, name: 'Gwen Strydom',    rating: '6.64', change: '+3', sport: 'pickleball' },
-                    { rank: 10, name: 'Bianca Swart',   rating: '6.50', change: '-1', sport: 'pickleball' }
+                    { rank: 9, name: 'Gwen Strydom', rating: '6.64', change: '+3', sport: 'pickleball' },
+                    { rank: 10, name: 'Bianca Swart', rating: '6.50', change: '-1', sport: 'pickleball' }
                 ],
                 doubles: [
-                    { rank: 1, name: 'van Zyl / Louw',       rating: '8.10', change: '+1', sport: 'tennis' },
-                    { rank: 2, name: 'Steyn / Joubert',      rating: '7.98', change: '0',  sport: 'tennis' },
-                    { rank: 3, name: 'Ferreira / Zulu',      rating: '7.75', change: '+2', sport: 'tennis' },
-                    { rank: 4, name: 'Pretorius / Coetzee',  rating: '7.60', change: '-1', sport: 'tennis' },
-                    { rank: 5, name: 'Dlamini / Patel',      rating: '7.42', change: '+3', sport: 'tennis' },
+                    { rank: 1, name: 'van Zyl / Louw', rating: '8.10', change: '+1', sport: 'tennis' },
+                    { rank: 2, name: 'Steyn / Joubert', rating: '7.98', change: '0', sport: 'tennis' },
+                    { rank: 3, name: 'Ferreira / Zulu', rating: '7.75', change: '+2', sport: 'tennis' },
+                    { rank: 4, name: 'Pretorius / Coetzee', rating: '7.60', change: '-1', sport: 'tennis' },
+                    { rank: 5, name: 'Dlamini / Patel', rating: '7.42', change: '+3', sport: 'tennis' },
                     { rank: 6, name: 'du Plessis / Sithole', rating: '7.30', change: '+2', sport: 'pickleball' },
-                    { rank: 7, name: 'Botha / Strydom',      rating: '7.15', change: '0',  sport: 'pickleball' },
-                    { rank: 8, name: 'Nkosi / Essop',        rating: '7.02', change: '-2', sport: 'tennis' },
-                    { rank: 9, name: 'Mahlangu / Swart',     rating: '6.88', change: '+1', sport: 'pickleball' },
+                    { rank: 7, name: 'Botha / Strydom', rating: '7.15', change: '0', sport: 'pickleball' },
+                    { rank: 8, name: 'Nkosi / Essop', rating: '7.02', change: '-2', sport: 'tennis' },
+                    { rank: 9, name: 'Mahlangu / Swart', rating: '6.88', change: '+1', sport: 'pickleball' },
                     { rank: 10, name: 'Molefe / van der Berg', rating: '6.71', change: '-1', sport: 'tennis' }
                 ]
             });
-            ]);
             const [regMode, setRegMode] = useState(null); // 'membership', 'league', null
             const [userProfile, setUserProfile] = useState({
                 name: 'Danielle S.',
@@ -579,6 +758,12 @@
             useEffect(() => {
                 const timer = setInterval(() => setCurrentTime(new Date()), 1000);
                 return () => clearInterval(timer);
+            }, []);
+
+            // Club name rotation
+            useEffect(() => {
+                const rotater = setInterval(() => setClubNameIdx(prev => (prev + 1) % CLUB_NAMES.length), 3000);
+                return () => clearInterval(rotater);
             }, []);
 
             useEffect(() => {
@@ -719,17 +904,18 @@
                         <div className="h-full flex flex-col items-center justify-center gap-8">
                             <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="stagger-link text-4xl font-black uppercase tracking-tighter hover:text-lime-400 transition-colors" style={{ transitionDelay: '0.1s' }}>About</a>
                             <a href="#membership" onClick={() => setIsMobileMenuOpen(false)} className="stagger-link text-4xl font-black uppercase tracking-tighter hover:text-lime-400 transition-colors" style={{ transitionDelay: '0.2s' }}>Membership</a>
-                            <a href="#booking" onClick={() => setIsMobileMenuOpen(false)} className="stagger-link text-4xl font-black uppercase tracking-tighter hover:text-lime-400 transition-colors" style={{ transitionDelay: '0.3s' }}>Book Court</a>
-                            <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="stagger-link text-4xl font-black uppercase tracking-tighter text-lime-400" style={{ transitionDelay: '0.4s' }}>Pickleball Hub</a>
+                            <a href="#coaches" onClick={() => setIsMobileMenuOpen(false)} className="stagger-link text-4xl font-black uppercase tracking-tighter hover:text-lime-400 transition-colors" style={{ transitionDelay: '0.3s' }}>Coaches</a>
+                            <a href="#booking" onClick={() => setIsMobileMenuOpen(false)} className="stagger-link text-4xl font-black uppercase tracking-tighter text-lime-400" style={{ transitionDelay: '0.4s' }}>Book Court</a>
                             <button
                                 onClick={() => {
-                                    setIsLoggedIn(true);
                                     setIsMobileMenuOpen(false);
+                                    if (isLoggedIn) { setIsProfileOpen(true); }
+                                    else { setShowSignInModal(true); }
                                 }}
                                 className="stagger-link mt-8 bg-white text-black px-12 py-4 rounded-full font-black text-sm uppercase tracking-widest"
                                 style={{ transitionDelay: '0.5s' }}
                             >
-                                {isLoggedIn ? 'Go to Q-Hub' : 'Member Login'}
+                                {isLoggedIn ? 'Go to Q-Hub' : 'Sign In'}
                             </button>
                         </div>
                     </div>
@@ -812,46 +998,57 @@
                     </div>
 
                     {/* Top Bar - 2026 Floating Island */}
-                    <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 px-8 py-3 glass-island rounded-full flex justify-between items-center shadow-2xl transition-all duration-500 hover:w-[98%]">
-                        <div className="flex items-center gap-12">
-                            <h1 className="text-xl font-black italic tracking-tighter uppercase cursor-pointer group">
-                                Queenswood<span className="text-blue-500 group-hover:text-lime-400 transition-colors duration-500">Sports</span>
-                            </h1>
+                    <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[96%] max-w-7xl z-50 px-4 sm:px-8 py-3 glass-island rounded-full flex justify-between items-center shadow-2xl transition-all duration-500">
+                        <div className="flex items-center gap-4 lg:gap-12">
+                            {/* Rotating Club Name */}
+                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setClubNameIdx(prev => (prev + 1) % CLUB_NAMES.length)}>
+                                <span className="text-lg sm:text-xl font-black italic tracking-tighter uppercase transition-all duration-500 whitespace-nowrap" style={{ color: CLUB_NAMES[clubNameIdx].color }}>
+                                    {CLUB_NAMES[clubNameIdx].icon} {CLUB_NAMES[clubNameIdx].label}
+                                </span>
+                                <div className="flex gap-1.5 ml-1">
+                                    {CLUB_NAMES.map((cn, idx) => (
+                                        <button key={idx} onClick={(e) => { e.stopPropagation(); setClubNameIdx(idx); }}
+                                            className={`rounded-full transition-all duration-500 ${idx === clubNameIdx ? 'w-5 h-2.5' : 'w-2.5 h-2.5 opacity-40 hover:opacity-80'}`}
+                                            style={{ backgroundColor: cn.color }}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
                             <div className="hidden lg:flex gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                                 <a href="#about" className="hover:text-white transition-all hover:tracking-[0.3em] duration-300">About</a>
+                                <a href="#coaches" className="hover:text-white transition-all hover:tracking-[0.3em] duration-300">Coaches</a>
                                 <a href="#membership" className="hover:text-white transition-all hover:tracking-[0.3em] duration-300">Membership</a>
                                 <a href="#booking" className="hover:text-white transition-all hover:tracking-[0.3em] duration-300">Book Court</a>
-                                <a href="#" className={`transition-all hover:tracking-[0.3em] duration-300 ${activeSport === 'Pickleball' ? 'text-lime-400 underline underline-offset-8' : 'hover:text-white'}`}>Pickleball Hub</a>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                             {isLoggedIn ? (
                                 <button
                                     onClick={() => setIsProfileOpen(true)}
-                                    className="hidden md:flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-2.5 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all font-primary"
+                                    className="hidden md:flex items-center gap-3 bg-white/5 border border-white/10 px-5 py-2.5 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all"
                                 >
                                     <span className="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
                                     {userProfile.name}
                                 </button>
                             ) : (
                                 <button
-                                    onClick={() => setIsLoggedIn(true)}
-                                    className="hidden md:block bg-white text-black px-8 py-2.5 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 hover:scale-105 transition-all active:scale-95 shadow-xl shadow-white/10"
+                                    onClick={() => setShowSignInModal(true)}
+                                    className="hidden md:block bg-white text-black px-6 py-2.5 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 hover:scale-105 transition-all active:scale-95 shadow-xl shadow-white/10"
                                 >
-                                    Member Login
+                                    Sign In
                                 </button>
                             )}
                             <button
                                 onClick={() => setIsMobileMenuOpen(true)}
                                 className="lg:hidden text-white p-2"
                             >
-                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                             </button>
                         </div>
                     </nav>
 
                     {/* Hero Section */}
-                    <section id="hero" className="relative min-h-screen flex items-center pt-24 overflow-hidden bg-slate-950">
+                    <section id="hero" className="relative min-h-screen flex items-center pt-20 sm:pt-24 overflow-hidden bg-slate-950">
                         {/* Dynamic Ambient Light */}
                         <div
                             className="ambient-light transition-all duration-300 ease-out"
@@ -880,8 +1077,8 @@
                             <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-transparent to-slate-950"></div>
                         </div>
 
-                        <div className="container mx-auto px-6 relative z-10 w-full reveal">
-                            <div className="grid lg:grid-cols-2 gap-16 items-center">
+                        <div className="container mx-auto px-4 sm:px-6 relative z-10 w-full reveal">
+                            <div className="grid lg:grid-cols-2 gap-8 sm:gap-16 items-center">
                                 {/* Left Side: High Impact Typography */}
                                 <div className="animate-modern">
                                     <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/10 mb-8 backdrop-blur-xl">
@@ -909,7 +1106,7 @@
                                         >
                                             Book Now
                                         </a>
-                                        <div className="flex gap-2 p-2 bg-white/5 rounded-[2rem] border border-white/10 backdrop-blur-2xl">
+                                        <div className="flex gap-2 p-1.5 sm:p-2 bg-white/5 rounded-[2rem] border border-white/10 backdrop-blur-2xl overflow-x-auto no-scrollbar">
                                             {SPORTS.map(sport => (
                                                 <button
                                                     key={sport.id}
@@ -917,7 +1114,7 @@
                                                         setActiveSport(sport.id);
                                                         triggerLoad(sport.id);
                                                     }}
-                                                    className={`px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 ${activeSport === sport.id ? 'bg-white text-black shadow-xl ring-4 ring-white/10' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                                                    className={`px-4 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] transition-all duration-500 whitespace-nowrap flex-shrink-0 ${activeSport === sport.id ? 'bg-white text-black shadow-xl ring-4 ring-white/10' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
                                                 >
                                                     {sport.label}
                                                 </button>
@@ -969,13 +1166,13 @@
 
                                         <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-blue-600/20 to-lime-400/20 border border-white/10 backdrop-blur-3xl">
                                             <div className="flex justify-between items-center mb-4">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-white italic">Elite Player Stats</span>
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-white">Active Session</span>
                                                 <span className="flex items-center gap-2 text-[8px] font-black text-lime-400 uppercase tracking-widest">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-lime-400 animate-pulse"></span> Gauteng Open Finalist
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-lime-400 animate-ping"></span> Live Now
                                                 </span>
                                             </div>
-                                            <h5 className="text-xl font-black uppercase tracking-tight italic text-white mb-2">Elite Series Points: 1,420</h5>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Next Pro Match: March 12th</p>
+                                            <h5 className="text-xl font-black uppercase tracking-tight italic text-white mb-2">Morning Power-Drill</h5>
+                                            <p className="text-[10px] font-bold text-slate-400">Court 05 • Advanced Training</p>
                                         </div>
 
                                         {/* Light reflection effect */}
@@ -1008,7 +1205,7 @@
                                 <div className="md:col-span-2 md:row-span-2 rounded-[3.5rem] p-12 flex flex-col justify-end group overflow-hidden relative bento-card">
                                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-blue-600/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                                     <div className="h-24 w-24 rounded-3xl bg-blue-500/10 flex items-center justify-center text-5xl mb-10 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative z-10">🏆</div>
-                                    <h4 className="text-5xl font-black mb-4 uppercase tracking-tighter group-hover:text-lime-400 transition-all relative z-10">Queenswood League</h4>
+                                    <h4 className="text-5xl font-black mb-4 uppercase tracking-tighter group-hover:text-lime-400 transition-all relative z-10">Q-Leagues</h4>
                                     <p className="text-slate-400 font-medium leading-relaxed max-w-md relative z-10 text-xl">Join our Level-Based competitive engine. Verified UTR play, weekly match-ups, and the elite Queenswood Ladder starting March 2026.</p>
                                     <div className="mt-8 flex gap-4 relative z-10 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
                                         <button onClick={() => setRegMode('league')} className="bg-white text-black px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 transition-colors shadow-2xl">Register for Winter Open</button>
@@ -1017,16 +1214,16 @@
 
                                 {/* Q-Leagues Leaderboard Item */}
                                 <div className="md:col-span-2 bento-card rounded-[2.5rem] p-10 flex flex-col justify-between group overflow-hidden relative">
-                                    <div className="flex justify-between items-center relative z-10 mb-6">
-                                        <h4 className="text-3xl font-black uppercase italic tracking-tighter">Queenswood Elite Leaderboard</h4>
+                                    <div className="flex justify-between items-center relative z-10 mb-8">
+                                        <h4 className="text-3xl font-black uppercase italic tracking-tighter">Q-Leaderboard</h4>
                                         <span className="text-[8px] font-bold text-lime-400 border border-lime-400/30 px-3 py-1 rounded-full uppercase tracking-widest">Season 01</span>
                                     </div>
                                     {(() => {
                                         const [activeTab, setActiveTab] = React.useState('mens');
                                         const categories = [
-                                            { key: 'mens',    label: "Men's"    },
-                                            { key: 'womens',  label: "Women's"  },
-                                            { key: 'doubles', label: 'Doubles'  },
+                                            { key: 'mens', label: "Men's" },
+                                            { key: 'womens', label: "Women's" },
+                                            { key: 'doubles', label: 'Doubles' },
                                         ];
                                         const players = leaderboard[activeTab] || [];
                                         return (
@@ -1035,7 +1232,7 @@
                                                 <div className="flex gap-2 mb-6 relative z-10">
                                                     {categories.map(c => (
                                                         <button key={c.key} onClick={() => setActiveTab(c.key)}
-                                                            className={	ext-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-full border transition-all }>
+                                                            className={`${activeTab === c.key ? 'bg-white text-black border-white' : 'text-slate-500 hover:text-white border-white/10'} text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-full border transition-all`}>
                                                             {c.label}
                                                         </button>
                                                     ))}
@@ -1045,13 +1242,13 @@
                                                     {players.map((player) => (
                                                         <div key={player.rank} className="flex justify-between items-center pb-3 border-b border-white/5 last:border-0">
                                                             <div className="flex items-center gap-3">
-                                                                <span className={	ext-sm font-black italic w-8 text-right }>#{player.rank.toString().padStart(2, '0')}</span>
+                                                                <span className="text-sm font-black italic w-8 text-right">#{player.rank.toString().padStart(2, '0')}</span>
                                                                 <span className="text-sm font-black uppercase tracking-tight">{player.name}</span>
                                                                 <span className="text-xs" title={player.sport === 'tennis' ? 'Tennis' : 'Pickleball'}>{player.sport === 'tennis' ? '🎾' : '🏓'}</span>
                                                             </div>
                                                             <div className="flex items-center gap-4">
                                                                 <span className="text-xs font-black italic text-white/60">{player.rating}</span>
-                                                                <span className={	ext-[9px] font-black w-6 text-right }>{player.change}</span>
+                                                                <span className="text-[9px] font-black w-6 text-right">{player.change}</span>
                                                             </div>
                                                         </div>
                                                     ))}
@@ -1067,8 +1264,8 @@
                                     <div className="flex items-center gap-10 relative z-10">
                                         <div className="h-20 w-20 rounded-2xl bg-white/5 flex items-center justify-center text-4xl group-hover:rotate-12 transition-transform duration-500">🎾</div>
                                         <div>
-                                            <h4 className="text-3xl font-black uppercase tracking-tight group-hover:text-lime-400 transition-colors">Social Tennis</h4>
-                                            <p className="text-slate-500 font-medium mt-2 text-lg">It has social tennis available for members or visitors every Thursday starting at 17H00 and every Saturday at 13H00.</p>
+                                            <h4 className="text-3xl font-black uppercase tracking-tight group-hover:text-lime-400 transition-colors">Social Dinks</h4>
+                                            <p className="text-slate-500 font-medium mt-2 text-lg">Every Thursday from 18:00. <br />R60 visitors. All levels welcome.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1126,40 +1323,125 @@
                         <div className="max-w-7xl mx-auto relative z-10 reveal">
                             <div className="grid lg:grid-cols-2 gap-20 items-center">
                                 <div className="animate-modern">
-                                    <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-500 mb-6 font-primary">A Legacy of Tennis Excellence</h2>
-                                    <h3 className="text-7xl font-black uppercase mb-10 leading-[0.8] tracking-tighter">
-                                        COMMUNITY <br />
-                                        <span className="text-lime-400 italic font-black">DRIVEN.</span>
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 rounded-full border border-blue-500/20 mb-6">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                                        <span className="text-[8px] font-black uppercase tracking-[0.4em] text-blue-400">Established 1954</span>
+                                    </div>
+                                    <h3 className="text-6xl sm:text-7xl font-black uppercase mb-10 leading-[0.8] tracking-tighter">
+                                        HERITAGE <br />
+                                        <span className="text-lime-400 italic font-black">REDEFINED.</span>
                                     </h3>
-                                    <p className="text-2xl text-white font-medium mb-12 leading-relaxed">
-                                        Since the early 1950s, Queenswood Tennis Club has been a cornerstone of the Gauteng tennis community.
+                                    <p className="text-xl sm:text-2xl text-slate-300 font-medium mb-12 leading-relaxed">
+                                        For over 70 years, Queenswood has been the beating heart of Pretoria's racket sports. Today, we fuse this rich legacy with a relentless pursuit of peak performance — creating an ultra-modern sanctuary where both social players and elite competitors thrive.
                                     </p>
-                                    <div className="grid grid-cols-3 gap-6 mb-12">
-                                        <div className="bento-card rounded-3xl p-6 text-center shadow-2xl">
-                                            <p className="text-4xl font-black text-white mb-2 tracking-tighter">70+</p>
-                                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Years of History</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
+                                        <div className="bento-card rounded-3xl p-6 text-center relative group overflow-hidden border border-white/5 hover:border-blue-500/30 transition-all duration-500 hover:scale-105">
+                                            <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                            <p className="text-4xl font-black text-white mb-2 tracking-tighter group-hover:text-blue-400 transition-colors">70+</p>
+                                            <p className="text-[9px] text-slate-500 uppercase font-black tracking-widest group-hover:text-slate-400 transition-colors">Years of Legend</p>
                                         </div>
-                                        <div className="bento-card rounded-3xl p-6 text-center border-lime-400/20 shadow-2xl">
-                                            <p className="text-4xl font-black text-lime-400 mb-2 tracking-tighter">300+</p>
-                                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Active Members</p>
+                                        <div className="bento-card rounded-3xl p-6 text-center border-lime-400/30 relative group overflow-hidden hover:bg-lime-400/5 transition-all duration-500 shadow-[0_0_30px_rgba(163,230,53,0.1)] hover:scale-105">
+                                            <div className="absolute top-0 w-full h-1 bg-lime-400 left-0"></div>
+                                            <p className="text-4xl font-black text-lime-400 mb-2 tracking-tighter shadow-lime-400">500+</p>
+                                            <p className="text-[9px] text-slate-400 uppercase font-black tracking-widest">Active Athletes</p>
                                         </div>
-                                        <div className="bento-card rounded-3xl p-6 text-center shadow-2xl">
-                                            <p className="text-4xl font-black text-white mb-2 tracking-tighter">50+</p>
-                                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Monthly Events</p>
+                                        <div className="bento-card rounded-3xl p-6 text-center relative group overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-500 hover:scale-105">
+                                            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                            <p className="text-4xl font-black text-white mb-2 tracking-tighter">100+</p>
+                                            <p className="text-[9px] text-slate-500 uppercase font-black tracking-widest group-hover:text-slate-400 transition-colors">Monthly Matches</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="bento-card rounded-[3.5rem] p-12 relative group animate-modern overflow-hidden" style={{ animationDelay: '0.2s' }}>
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/5 blur-3xl rounded-full translate-x-16 -translate-y-16"></div>
-                                    <h4 className="text-3xl font-black uppercase italic mb-8 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">Technical Specs</h4>
-                                    <div className="space-y-6 text-slate-400 text-lg leading-relaxed font-medium">
-                                        <p><span className="text-white font-black uppercase text-[10px] tracking-widest mr-4 border-b border-white/10 pb-1">Surface</span> Pro-Grade DecoTurf System (US Open Standard).</p>
-                                        <p><span className="text-white font-black uppercase text-[10px] tracking-widest mr-4 border-b border-white/10 pb-1">Illumination</span> Twin-Mast 2000 Lux LED Stadium Lighting.</p>
-                                        <p><span className="text-white font-black uppercase text-[10px] tracking-widest mr-4 border-b border-white/10 pb-1">Coaching</span> Led by <span className="text-lime-400">Carla Smith</span>, <span className="text-lime-400">Joe Lodder</span> & Elite Staff.</p>
-                                        <p><span className="text-white font-black uppercase text-[10px] tracking-widest mr-4 border-b border-white/10 pb-1">Analytics</span> Precision Match Tracking & Video Replay.</p>
-                                        <p className="border-t border-white/5 pt-6 text-white italic">"Where elite performance meets a community legacy built over 70 years."</p>
+                                <div className="bento-card rounded-[3.5rem] p-12 relative group animate-modern overflow-hidden border border-white/10 hover:border-blue-500/30 transition-all duration-700 shadow-2xl" style={{ animationDelay: '0.2s' }}>
+                                    <div className="absolute top-0 right-0 w-40 h-40 bg-lime-400/10 blur-[50px] rounded-full group-hover:bg-lime-400/20 transition-all duration-700 translate-x-10 -translate-y-10"></div>
+                                    <div className="flex items-center gap-4 mb-8">
+                                        <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-xl shadow-[0_0_20px_rgba(59,130,246,0.3)]">⚡</div>
+                                        <h4 className="text-3xl font-black uppercase italic tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">Engineered Specs</h4>
+                                    </div>
+                                    <div className="space-y-6 text-slate-400 text-[15px] sm:text-base leading-relaxed font-medium">
+                                        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                                            <span className="text-lime-400 font-black uppercase text-[9px] tracking-[0.2em] sm:min-w-[120px]">Surface Array</span>
+                                            <span className="text-white">Pro-Grade Multi-layer Court Systems.</span>
+                                        </div>
+                                        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                                            <span className="text-lime-400 font-black uppercase text-[9px] tracking-[0.2em] sm:min-w-[120px]">Illumination</span>
+                                            <span className="text-white">Twin-Mast 2000 Lux LED Stadium Lighting.</span>
+                                        </div>
+                                        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                                            <span className="text-lime-400 font-black uppercase text-[9px] tracking-[0.2em] sm:min-w-[120px]">Elite Coaching</span>
+                                            <span className="text-white">World-class guidance for all levels.</span>
+                                        </div>
+                                        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                                            <span className="text-lime-400 font-black uppercase text-[9px] tracking-[0.2em] sm:min-w-[120px]">Data Analytics</span>
+                                            <span className="text-white">Precision Match Tracking & Instant Replay.</span>
+                                        </div>
+                                        <p className="border-t border-white/5 pt-6 text-slate-500 italic font-bold">"Where a 70-year legacy meets tomorrow's athletic standard."</p>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ── Coach Cards Section ────────────────────────────────────────── */}
+                    <section id="coaches" className="bg-slate-950 py-24 sm:py-32 px-4 sm:px-6 relative overflow-hidden">
+                        <div className="absolute bottom-0 right-0 w-[40%] h-[40%] bg-blue-600/5 blur-[120px] rounded-full"></div>
+                        <div className="max-w-7xl mx-auto relative z-10 reveal">
+                            <div className="text-center mb-16 sm:mb-20">
+                                <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-500 mb-6">Elite Coaching Staff</h2>
+                                <h3 className="text-4xl sm:text-6xl font-black uppercase tracking-tighter italic">Meet Your <span className="text-lime-400">Coaches.</span></h3>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+                                {COACHES.map((coach, ci) => (
+                                    <div key={ci} className="perspective-1000 group">
+                                        <div className="tilt-card bento-card rounded-[2.5rem] sm:rounded-[3.5rem] p-8 sm:p-12 border border-white/10 relative overflow-hidden hover:border-lime-400/30 transition-all duration-700">
+                                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-lime-400 rounded-t-full z-10"></div>
+                                            <div className="scanline-overlay"></div>
+                                            {/* Header */}
+                                            <div className="flex items-start gap-4 sm:gap-6 mb-8">
+                                                <div className="relative flex-shrink-0">
+                                                    <img src={coach.image} className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl border-2 border-white/10 grayscale group-hover:grayscale-0 transition-all duration-700 object-cover" alt={coach.name} />
+                                                    <div className="absolute -bottom-2 -right-2 bg-lime-400 px-2 py-0.5 rounded-lg text-black font-black text-[7px] border-4 border-slate-950">QWP</div>
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <h4 className="text-xl sm:text-2xl font-black uppercase tracking-tighter text-white">{coach.name}</h4>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-lime-400">{coach.title}</p>
+                                                    <p className="text-xs text-slate-500 mt-2 font-medium">{coach.bio}</p>
+                                                </div>
+                                            </div>
+                                            {/* Stats */}
+                                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+                                                {[
+                                                    { l: 'Rating', v: coach.rating, c: 'text-blue-400' },
+                                                    { l: 'Experience', v: coach.experience, c: 'text-white' },
+                                                    { l: 'Rate', v: coach.rate, c: 'text-lime-400' },
+                                                    { l: 'Wins', v: coach.wins, c: 'text-white' },
+                                                ].map(s => (
+                                                    <div key={s.l} className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/5 border border-white/5 group-hover:bg-white/10 transition-all">
+                                                        <div className="text-[7px] sm:text-[8px] font-black uppercase tracking-widest text-slate-500 mb-1">{s.l}</div>
+                                                        <div className={`text-lg sm:text-xl font-black italic ${s.c}`}>{s.v}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            {/* Specialty & Certs */}
+                                            <div className="flex flex-wrap gap-2 mb-6">
+                                                <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest">{coach.specialty}</span>
+                                                {coach.certifications.map(cert => (
+                                                    <span key={cert} className="bg-white/5 text-slate-400 border border-white/5 px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest">{cert}</span>
+                                                ))}
+                                            </div>
+                                            {/* CTA */}
+                                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:justify-between">
+                                                <div className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                                                    Next Available: <span className="text-lime-400">{coach.nextSession}</span>
+                                                </div>
+                                                <button className="bg-lime-400 text-black px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-all shadow-xl shadow-lime-400/20 active:scale-95 text-center">
+                                                    Book Session →
+                                                </button>
+                                            </div>
+                                            <div className="absolute inset-x-8 -bottom-4 h-8 bg-lime-400/10 blur-[40px] rounded-full group-hover:bg-lime-400/20 transition-all duration-700"></div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </section>
@@ -1171,76 +1453,81 @@
                         <div className="max-w-7xl mx-auto relative z-10 reveal">
                             <div className="text-center mb-20 animate-modern">
                                 <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-lime-400 mb-6">Join the Movement</h2>
-                                <h3 className="text-6xl font-black uppercase tracking-tighter italic mb-12">Membership Plans</h3>
+                                <h3 className="text-6xl font-black uppercase tracking-tighter italic mb-8">Membership Plans</h3>
+                                <p className="text-slate-400 text-sm max-w-xl mx-auto font-medium mb-12 uppercase tracking-widest">Select your perfect tier and secure your place in Pretoria's elite racket club.</p>
 
                                 {/* Billing Toggle */}
                                 <div className="flex items-center justify-center gap-6 mb-12">
                                     <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${billingCycle === 'monthly' ? 'text-white' : 'text-slate-500'}`}>Monthly</span>
                                     <button
                                         onClick={() => setBillingCycle(prev => prev === 'monthly' ? 'annual' : 'monthly')}
-                                        className="w-16 h-8 bg-white/10 rounded-full p-1 relative transition-all duration-500 hover:bg-white/20"
+                                        className="w-16 h-8 bg-white/10 rounded-full p-1 relative transition-all duration-500 hover:bg-white/20 border border-white/10"
                                     >
-                                        <div className={`w-6 h-6 bg-lime-400 rounded-full transition-all duration-500 transform ${billingCycle === 'annual' ? 'translate-x-8 shadow-[0_0_20px_rgba(163,230,53,0.5)]' : ''}`}></div>
+                                        <div className={`w-6 h-6 bg-lime-400 rounded-full transition-all duration-500 transform flex items-center justify-center ${billingCycle === 'annual' ? 'translate-x-8 shadow-[0_0_20px_rgba(163,230,53,0.5)]' : ''}`}>
+                                            <div className="w-2 h-2 rounded-full bg-slate-950"></div>
+                                        </div>
                                     </button>
                                     <div className="flex items-center gap-3">
                                         <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${billingCycle === 'annual' ? 'text-white' : 'text-slate-500'}`}>Annual</span>
-                                        <span className="bg-lime-400/10 text-lime-400 border border-lime-400/30 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest animate-pulse">Save 20%</span>
+                                        <span className="bg-lime-400/10 text-lime-400 border border-lime-400/30 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest animate-pulse border-lime-400/50 shadow-[0_0_10px_rgba(163,230,53,0.2)]">Save 20%</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="grid md:grid-cols-3 gap-8 animate-modern">
-                                {/* Adult Plan */}
-                                <div className="flex flex-col bg-white rounded-[4rem] p-12 text-black shadow-[0_40px_100px_rgba(163,230,53,0.3)] scale-105 z-10 border-4 border-lime-400 relative overflow-hidden group hover:scale-[1.08] transition-all duration-500">
-                                    <div className="absolute top-0 right-0 bg-lime-400 text-black px-8 py-3 rounded-bl-[2rem] font-black text-[10px] uppercase tracking-widest">Elite Tier</div>
-                                    <h4 className="text-5xl font-black uppercase mb-2 tracking-tighter">Adult Pro</h4>
-                                    <p className="text-slate-500 font-bold text-sm mb-10 uppercase tracking-widest">The Gold Standard Access</p>
-                                    <div className="mb-10">
+                            <div className="grid md:grid-cols-3 gap-8 animate-modern relative">
+                                {/* Adult Pro Plan (Elevated) */}
+                                <div className="flex flex-col bg-slate-900 border border-lime-400/30 rounded-[4rem] p-12 text-white shadow-[0_40px_100px_rgba(163,230,53,0.15)] scale-105 z-10 relative overflow-hidden group hover:scale-[1.08] transition-all duration-500 before:absolute before:inset-0 before:bg-gradient-to-br before:from-lime-400/5 before:to-transparent before:-z-10">
+                                    <div className="absolute top-0 right-0 bg-lime-400 text-black px-8 py-3 rounded-bl-[2rem] font-black text-[10px] uppercase tracking-widest shadow-lg shadow-lime-400/30 ring-1 ring-lime-400/50 flex items-center gap-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-black animate-ping"></span> Most Popular
+                                    </div>
+                                    <h4 className="text-5xl font-black uppercase mb-2 tracking-tighter text-white">Adult Pro</h4>
+                                    <p className="text-lime-400 font-bold text-sm mb-10 uppercase tracking-widest">The Ultimate Competitive Edge</p>
+                                    <div className="mb-10 relative">
                                         <span className="text-7xl font-black tracking-tighter italic">R{billingCycle === 'monthly' ? '150' : '120'}</span>
                                         <span className="text-slate-500 font-black text-xl">/mo</span>
-                                        <p className="text-[10px] font-black uppercase tracking-tighter text-slate-400 mt-3">+ R90 joining fee</p>
+                                        <p className="text-[10px] font-black uppercase tracking-tighter text-slate-400 mt-3 flex items-center gap-2">+ R90 Initial verification fee</p>
                                     </div>
                                     <div className="space-y-6 mb-12">
-                                        <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest bg-slate-50 p-3 rounded-2xl"><span className="text-lime-500 scale-125">✓</span> 24/7 Priority Booking Node</div>
-                                        <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest bg-slate-50 p-3 rounded-2xl"><span className="text-lime-500 scale-125">✓</span> Pro-Shop & Restring (15% OFF)</div>
-                                        <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest bg-slate-50 p-3 rounded-2xl"><span className="text-lime-500 scale-125">✓</span> High-FPS Performance Tracking</div>
-                                        <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest bg-slate-50 p-3 rounded-2xl"><span className="text-lime-500 scale-125">✓</span> Guest Access Pass (2/month)</div>
+                                        <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest"><span className="text-lime-400 bg-lime-400/10 p-1.5 rounded-lg border border-lime-400/20 text-sm">✦</span> 24/7 Priority Court Booking</div>
+                                        <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest"><span className="text-lime-400 bg-lime-400/10 p-1.5 rounded-lg border border-lime-400/20 text-sm">✦</span> Unlimited Match Play Access</div>
+                                        <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest"><span className="text-lime-400 bg-lime-400/10 p-1.5 rounded-lg border border-lime-400/20 text-sm">✦</span> Pro-Shop & Restring (15% OFF)</div>
+                                        <div className="flex items-center gap-4 font-black text-xs uppercase tracking-widest"><span className="text-lime-400 bg-lime-400/10 p-1.5 rounded-lg border border-lime-400/20 text-sm">✦</span> VIP Guest Pass (2x / Month)</div>
                                     </div>
-                                    <button onClick={() => setRegMode('membership')} className="mt-auto w-full bg-black text-white py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-lime-400 hover:text-black transition-all duration-300 shadow-2xl">Start Professional Journey</button>
+                                    <button onClick={() => setRegMode('membership')} className="mt-auto w-full bg-lime-400 text-black border border-lime-400 py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-lime-500 hover:scale-[1.02] transition-all duration-300 shadow-[0_20px_40px_rgba(163,230,53,0.2)]">Secure Your Spot →</button>
                                 </div>
 
                                 {/* Masters Plan */}
-                                <div className="flex flex-col bento-card rounded-[3.5rem] p-12 border-white/10 hover:border-lime-400/30 transition-all duration-700 group">
-                                    <h4 className="text-5xl font-black uppercase mb-2 tracking-tighter">Masters</h4>
-                                    <p className="text-slate-500 font-bold text-sm mb-10 uppercase tracking-widest">For athletes 60+</p>
+                                <div className="flex flex-col bento-card rounded-[3.5rem] p-12 border-white/5 hover:border-white/20 transition-all duration-700 group hover:-translate-y-2 mt-4 md:mt-0">
+                                    <h4 className="text-4xl font-black uppercase mb-2 tracking-tighter text-white/90">Masters</h4>
+                                    <p className="text-slate-500 font-bold text-xs mb-10 uppercase tracking-widest border-b border-white/10 pb-4">Veterans Age 60+</p>
                                     <div className="mb-10">
-                                        <span className="text-7xl font-black tracking-tighter italic text-white">R{billingCycle === 'monthly' ? '120' : '95'}</span>
-                                        <span className="text-slate-500 font-black text-xl">/mo</span>
-                                        <p className="text-[10px] font-black uppercase tracking-tighter text-slate-500 mt-3">+ R90 joining fee</p>
+                                        <span className="text-6xl font-black tracking-tighter italic text-white/90">R{billingCycle === 'monthly' ? '120' : '95'}</span>
+                                        <span className="text-slate-500 font-black text-lg">/mo</span>
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mt-3">+ R90 Initial verification fee</p>
                                     </div>
                                     <div className="space-y-6 mb-12 text-slate-400 font-medium">
-                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-lime-400">✓</span> Morning Social Priority Slot</div>
-                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-lime-400">✓</span> League & Mixed Participation</div>
-                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-lime-400">✓</span> Clubhouse Performance Perks</div>
+                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px] font-black"><span className="text-white bg-white/10 p-1.5 rounded-md border border-white/5">✓</span> Morning Social Priority Slot</div>
+                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px] font-black"><span className="text-white bg-white/10 p-1.5 rounded-md border border-white/5">✓</span> League & Mixed Participation</div>
+                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px] font-black"><span className="text-white bg-white/10 p-1.5 rounded-md border border-white/5">✓</span> Clubhouse Performance Perks</div>
                                     </div>
-                                    <button onClick={() => setRegMode('membership')} className="mt-auto w-full bg-white/5 border border-white/10 text-white py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all">Sign Up</button>
+                                    <button onClick={() => setRegMode('membership')} className="mt-auto w-full bg-white/5 border border-white/10 text-white py-5 rounded-3xl font-black uppercase tracking-widest text-[10px] hover:bg-white hover:text-black transition-all">Sign Up</button>
                                 </div>
 
                                 {/* Junior Plan */}
-                                <div className="flex flex-col bento-card rounded-[3.5rem] p-12 border-white/10 hover:border-blue-400/30 transition-all duration-700 group">
-                                    <h4 className="text-5xl font-black uppercase mb-2 tracking-tighter text-blue-500 uppercase">Junior</h4>
-                                    <p className="text-slate-500 font-bold text-sm mb-10 uppercase tracking-widest">Legacy for 21 & Under</p>
+                                <div className="flex flex-col bento-card rounded-[3.5rem] p-12 border-white/5 hover:border-blue-500/30 transition-all duration-700 group hover:-translate-y-2 mt-4 md:mt-0">
+                                    <h4 className="text-4xl font-black uppercase mb-2 tracking-tighter text-blue-400">Junior Ace</h4>
+                                    <p className="text-slate-500 font-bold text-xs mb-10 uppercase tracking-widest border-b border-blue-500/20 pb-4">Next Gen U21</p>
                                     <div className="mb-10">
-                                        <span className="text-7xl font-black tracking-tighter italic text-white">R{billingCycle === 'monthly' ? '75' : '60'}</span>
-                                        <span className="text-slate-500 font-black text-xl">/mo</span>
-                                        <p className="text-[10px] font-black uppercase tracking-tighter text-slate-500 mt-3">+ R90 joining fee</p>
+                                        <span className="text-6xl font-black tracking-tighter italic text-white/90">R{billingCycle === 'monthly' ? '75' : '60'}</span>
+                                        <span className="text-slate-500 font-black text-lg">/mo</span>
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mt-3">+ R90 Initial verification fee</p>
                                     </div>
                                     <div className="space-y-6 mb-12 text-slate-400 font-medium">
-                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-blue-500">✓</span> Junior Masterclass Invites</div>
-                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-blue-500">✓</span> Competitive Ladder Seed</div>
-                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px]"><span className="text-blue-500">✓</span> Performance Analytics Node</div>
+                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px] font-black"><span className="text-blue-500 bg-blue-500/10 p-1.5 rounded-md border border-blue-500/20">✓</span> High-Performance Masterclasses</div>
+                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px] font-black"><span className="text-blue-500 bg-blue-500/10 p-1.5 rounded-md border border-blue-500/20">✓</span> Junior Ladder Seeding</div>
+                                        <div className="flex items-center gap-4 uppercase tracking-widest text-[10px] font-black"><span className="text-blue-500 bg-blue-500/10 p-1.5 rounded-md border border-blue-500/20">✓</span> Match-Play Video Analysis</div>
                                     </div>
-                                    <button onClick={() => setRegMode('membership')} className="mt-auto w-full bg-white/5 border border-white/10 text-white py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all">Apply for Academy</button>
+                                    <button onClick={() => setRegMode('membership')} className="mt-auto w-full bg-blue-500/10 border border-blue-500/30 text-blue-400 py-5 rounded-3xl font-black uppercase tracking-widest text-[10px] hover:bg-blue-500 hover:text-white transition-all">Apply for Academy</button>
                                 </div>
                             </div>
                         </div>
@@ -1261,100 +1548,111 @@
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-lime-400"></div>
 
                                     {/* Booking Steps Header */}
-                                    <div className="flex justify-center gap-4 mb-12">
+                                    {/* Booking Steps Header */}
+                                    <div className="flex justify-between items-center mb-8 px-2">
                                         {['time', 'court', 'review'].map((step, idx) => (
-                                            <div key={step} className="flex items-center gap-3">
-                                                <div className={`w-8 h-8 rounded-full border flex items-center justify-center font-black text-xs transition-all duration-500 ${bookingStep === step ? 'bg-lime-400 border-lime-400 text-black scale-110' : 'border-white/10 text-slate-500'}`}>
+                                            <div key={step} className="flex flex-col items-center gap-2 flex-1 relative">
+                                                <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-black text-sm transition-all duration-500 z-10 ${bookingStep === step ? 'bg-lime-400 border-lime-400 text-black scale-110 shadow-[0_0_20px_rgba(163,230,53,0.4)] animate-pulse' : 'bg-slate-900 border-white/10 text-slate-500'}`}>
                                                     {idx + 1}
                                                 </div>
-                                                <span className={`text-[10px] uppercase font-black tracking-widest hidden sm:block ${bookingStep === step ? 'text-white' : 'text-slate-600'}`}>{step}</span>
-                                                {idx < 2 && <div className="w-8 h-px bg-white/10 mx-2"></div>}
+                                                <span className={`text-[8px] uppercase font-black tracking-widest ${bookingStep === step ? 'text-lime-400' : 'text-slate-600'}`}>{step}</span>
+                                                {idx < 2 && (
+                                                    <div className={`absolute top-5 left-[calc(50%+20px)] w-[calc(100%-40px)] h-0.5 z-0 transition-colors duration-500 ${(['court', 'review'].includes(bookingStep) && idx === 0) || (bookingStep === 'review' && idx === 1) ? 'bg-lime-400' : 'bg-white/10'}`}></div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
 
                                     {bookingStep === 'time' && (
-                                        <div className="animate-modern">
-                                            <div className="flex items-center justify-between mb-8">
-                                                <h3 className="text-3xl font-black uppercase tracking-tight">1. Choose Date & Time</h3>
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
-                                                    {selectedDate ? selectedDate.full : 'Select a date'}
-                                                </span>
+                                        <div className="animate-modern slide-in">
+                                            <div className="mb-8">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <h3 className="text-2xl font-black uppercase tracking-tight text-white">1. Select Date</h3>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-lime-400">Step 1 of 3</span>
+                                                </div>
+                                                <p className="text-slate-500 text-[10px] uppercase font-black tracking-widest text-left">Find your perfect window.</p>
                                             </div>
 
-                                            {/* Date Explorer */}
-                                            <div className="flex gap-3 overflow-x-auto pb-4 mb-8 no-scrollbar">
+                                            {/* Date Explorer - Mobile Snap */}
+                                            <div className="flex gap-4 overflow-x-auto pb-6 mb-8 no-scrollbar snap-x snap-mandatory">
                                                 {getNextSevenDays().map((date) => (
                                                     <button
                                                         key={date.iso}
                                                         onClick={() => setSelectedDate(date)}
-                                                        className={`flex-shrink-0 w-[72px] p-4 rounded-2xl border transition-all duration-300 text-center ${selectedDate?.iso === date.iso
-                                                            ? 'bg-lime-400 border-lime-400 text-black scale-105 shadow-xl shadow-lime-400/20'
-                                                            : 'bg-white/5 border-white/10 text-slate-500 hover:border-white/20 hover:text-white'}`}
+                                                        className={`flex-shrink-0 w-20 p-5 rounded-2xl border-2 transition-all duration-300 text-center snap-start ${selectedDate?.iso === date.iso
+                                                            ? 'bg-lime-400 border-lime-400 text-black scale-105 shadow-xl shadow-lime-400/30'
+                                                            : 'bg-white/5 border-white/5 text-slate-500 hover:border-white/20'}`}
                                                     >
-                                                        <p className="text-[9px] font-black uppercase tracking-widest mb-1">{date.short}</p>
-                                                        <p className="text-2xl font-black leading-none">{date.day}</p>
+                                                        <p className="text-[10px] font-black uppercase tracking-widest mb-1">{date.short}</p>
+                                                        <p className="text-3xl font-black leading-none">{date.day}</p>
                                                     </button>
                                                 ))}
                                             </div>
 
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-4">Available Time Slots</p>
-                                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 mb-10">
-                                                {['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'].map(time => (
-                                                    <button
-                                                        key={time}
-                                                        onClick={() => setSelectedTime(time)}
-                                                        className={`py-3 rounded-xl font-black text-[10px] tracking-widest transition-all duration-300 border ${selectedTime === time
-                                                            ? 'bg-white text-black border-white scale-105 shadow-xl'
-                                                            : 'bg-white/5 text-slate-400 border-white/5 hover:bg-white/10 hover:text-white'}`}
-                                                    >
-                                                        {time}
-                                                    </button>
-                                                ))}
+                                            <div className="mb-6">
+                                                <h3 className="text-2xl font-black uppercase tracking-tight text-white text-left mb-6">2. Pick Time</h3>
+                                                <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-3 mb-10 time-grid">
+                                                    {['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'].map(time => (
+                                                        <button
+                                                            key={time}
+                                                            onClick={() => setSelectedTime(time)}
+                                                            className={`py-4 rounded-xl font-black text-xs tracking-widest transition-all duration-300 border-2 ${selectedTime === time
+                                                                ? 'bg-white text-black border-white scale-105 shadow-xl'
+                                                                : 'bg-white/5 text-slate-400 border-white/5 hover:bg-white/10 hover:text-white'}`}
+                                                        >
+                                                            {time}
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
-                                            <div className="flex items-center gap-4">
+
+                                            <div className="booking-sticky-bar mt-8">
                                                 <button
                                                     onClick={() => setBookingStep('court')}
                                                     disabled={!selectedTime || !selectedDate}
-                                                    className="bg-lime-400 text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all disabled:opacity-50 shadow-xl shadow-lime-400/20"
+                                                    className="w-full bg-lime-400 text-black py-6 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-[1.02] transition-all disabled:opacity-50 disabled:grayscale shadow-[0_20px_40px_rgba(163,230,53,0.3)] active:scale-95"
                                                 >
-                                                    Select Court →
+                                                    Next Step: Select Court →
                                                 </button>
-                                                {(!selectedTime || !selectedDate) && <p className="text-[9px] font-black uppercase tracking-widest text-slate-600">Pick a date and time to continue</p>}
+                                                {!selectedTime && <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-4 text-center">Pick a date and time to continue</p>}
                                             </div>
                                         </div>
                                     )}
 
                                     {bookingStep === 'court' && (
-                                        <div className="animate-modern">
-                                            <div className="flex items-center justify-between mb-8">
-                                                <h3 className="text-3xl font-black uppercase tracking-tight">2. Select Your Arena</h3>
-                                                <div className="flex gap-3">
-                                                    <span className="flex items-center gap-1.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest">🎾 Tennis Courts 1–3</span>
-                                                    <span className="flex items-center gap-1.5 bg-lime-400/10 text-lime-400 border border-lime-400/20 px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest">🏓 Pickleball Courts 4–5</span>
+                                        <div className="animate-modern slide-in">
+                                            <div className="mb-8">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <h3 className="text-2xl font-black uppercase tracking-tight text-white">2. Select Court</h3>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-lime-400">Step 2 of 3</span>
                                                 </div>
+                                                <p className="text-slate-500 text-[10px] uppercase font-black tracking-widest text-left">Where legacies are built.</p>
                                             </div>
-                                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+
+                                            <div className="flex flex-col gap-4 mb-10">
                                                 {COURTS.map(court => (
                                                     <button
                                                         key={court.id}
                                                         onClick={() => setSelectedCourt(court)}
-                                                        className={`p-6 rounded-[2rem] border text-left transition-all duration-300 relative overflow-hidden ${selectedCourt?.id === court.id
+                                                        className={`p-5 rounded-2xl border-2 text-left transition-all duration-300 relative overflow-hidden ${selectedCourt?.id === court.id
                                                             ? 'bg-white text-black border-white shadow-2xl scale-[1.02]'
                                                             : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'}`}
                                                     >
-                                                        <div className="flex justify-between items-start mb-4">
-                                                            <h4 className="font-black text-lg uppercase tracking-tight">{court.name}</h4>
-                                                            <span className={`text-[8px] px-2.5 py-1 rounded-full font-black uppercase tracking-widest ${court.id <= 3
-                                                                ? (selectedCourt?.id === court.id ? 'bg-blue-500 text-white' : 'bg-blue-500/10 text-blue-400')
-                                                                : (selectedCourt?.id === court.id ? 'bg-lime-500 text-black' : 'bg-lime-400/10 text-lime-400')
+                                                        <div className="flex justify-between items-center mb-2">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-xl">{court.id <= 3 ? '🎾' : '🏓'}</span>
+                                                                <h4 className="font-black text-base uppercase tracking-tight">{court.name}</h4>
+                                                            </div>
+                                                            <span className={`text-[7px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest ${court.id <= 3
+                                                                ? (selectedCourt?.id === court.id ? 'bg-blue-500 text-white' : 'bg-blue-500/20 text-blue-400')
+                                                                : (selectedCourt?.id === court.id ? 'bg-lime-500 text-black' : 'bg-lime-400/20 text-lime-400')
                                                                 }`}>
-                                                                {court.id <= 3 ? '🎾 Tennis' : '🏓 Pickleball'}
+                                                                {court.id <= 3 ? 'Tennis' : 'Pickleball'}
                                                             </span>
                                                         </div>
-                                                        <div className="space-y-1">
+                                                        <div className="flex flex-wrap gap-x-4 gap-y-1">
                                                             {court.features.map(f => (
-                                                                <div key={f} className={`text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 ${selectedCourt?.id === court.id ? 'text-slate-600' : 'text-slate-500'}`}>
+                                                                <div key={f} className={`text-[8px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${selectedCourt?.id === court.id ? 'text-slate-600' : 'text-slate-500'}`}>
                                                                     <span className="w-1 h-1 rounded-full bg-current"></span> {f}
                                                                 </div>
                                                             ))}
@@ -1362,12 +1660,18 @@
                                                     </button>
                                                 ))}
                                             </div>
-                                            <div className="flex gap-4">
-                                                <button onClick={() => setBookingStep('time')} className="px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs border border-white/10 text-white hover:bg-white/5 transition-all">← Back</button>
+
+                                            <div className="booking-sticky-bar mt-8 flex gap-3">
+                                                <button
+                                                    onClick={() => setBookingStep('time')}
+                                                    className="flex-1 bg-white/5 border-2 border-white/5 text-white py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-all active:scale-95"
+                                                >
+                                                    ← Back
+                                                </button>
                                                 <button
                                                     onClick={() => setBookingStep('review')}
                                                     disabled={!selectedCourt}
-                                                    className="bg-lime-400 text-black px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all disabled:opacity-50"
+                                                    className="flex-[2] bg-lime-400 text-black py-6 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-[1.02] transition-all disabled:opacity-50 disabled:grayscale shadow-[0_20px_40px_rgba(163,230,53,0.3)] active:scale-95"
                                                 >
                                                     Review Booking →
                                                 </button>
@@ -1376,89 +1680,113 @@
                                     )}
 
                                     {bookingStep === 'review' && (
-                                        <div className="animate-modern py-6">
-                                            <h3 className="text-3xl font-black uppercase mb-12 tracking-tight italic">3. Confirm Booking</h3>
-                                            <p className="text-slate-400 uppercase font-black text-[10px] tracking-[0.3em] mb-12">Review your reservation details below.</p>
+                                        <div className="animate-modern slide-in">
+                                            <div className="mb-8">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <h3 className="text-2xl font-black uppercase tracking-tight text-white">3. Final Review</h3>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-lime-400">Step 3 of 3</span>
+                                                </div>
+                                                <p className="text-slate-500 text-[10px] uppercase font-black tracking-widest text-left">Almost time to shine.</p>
+                                            </div>
 
-                                            <div className="max-w-md mx-auto space-y-6 mb-12 text-left bg-white/5 p-8 rounded-[2.5rem] border border-white/10">
-                                                <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Court</span>
-                                                    <span className="font-black text-white uppercase italic">{selectedCourt?.name}</span>
+                                            <div className="bg-white/5 p-6 rounded-3xl border-2 border-white/5 mb-8 space-y-5 text-left">
+                                                <div className="flex justify-between items-center border-b border-white/5 pb-3">
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Venue</span>
+                                                    <span className="font-black text-white uppercase italic text-sm">{selectedCourt?.name}</span>
                                                 </div>
-                                                <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Date</span>
-                                                    <span className="font-black text-white italic">{selectedDate?.full}, 2026</span>
+                                                <div className="flex justify-between items-center border-b border-white/5 pb-3">
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Date</span>
+                                                    <span className="font-black text-white italic text-sm">{selectedDate?.full}</span>
                                                 </div>
-                                                <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Time</span>
-                                                    <span className="font-black text-white italic">{selectedTime} – {selectedTime ? (parseInt(selectedTime) + 1).toString().padStart(2, '0') : ''}:00</span>
+                                                <div className="flex justify-between items-center border-b border-white/5 pb-3">
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Schedule</span>
+                                                    <span className="font-black text-white italic text-sm">{selectedTime} – {(parseInt(selectedTime) + 1).toString().padStart(2, '0')}:00</span>
                                                 </div>
-                                                {isLoggedIn && (
-                                                    <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                                                        <span className="text-[10px] font-black uppercase tracking-widest text-lime-400">Elite Discount</span>
-                                                        <span className="font-black text-lime-400 italic">-15% Applied</span>
+                                                {isLoggedIn ? (
+                                                    <div className="flex justify-between items-center border-b border-white/5 pb-3">
+                                                        <span className="text-[9px] font-black uppercase tracking-widest text-lime-400">Elite Discount</span>
+                                                        <span className="font-black text-lime-400 italic text-sm">-15% Applied</span>
+                                                    </div>
+                                                ) : (
+                                                    <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-left">
+                                                        <p className="text-[9px] font-black uppercase tracking-[0.15em] text-blue-400 mb-2">💡 Want a better deal?</p>
+                                                        <button
+                                                            onClick={() => { setSignInForBooking(true); setShowSignInModal(true); }}
+                                                            className="text-[10px] font-black uppercase tracking-widest text-white border-b border-white hover:text-lime-400 hover:border-lime-400 transition-all"
+                                                        >
+                                                            Sign in for member rates
+                                                        </button>
                                                     </div>
                                                 )}
                                                 <div className="flex justify-between items-center pt-2">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Total</span>
-                                                    <span className="text-2xl font-black text-lime-400 tracking-tighter italic">R{calculatePrice().toFixed(2)}</span>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Total Due</span>
+                                                    <span className="text-3xl font-black text-lime-400 tracking-tighter italic">R{calculatePrice().toFixed(2)}</span>
                                                 </div>
                                             </div>
 
-                                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-10">Payment will be processed securely via <span className="text-white">Yoco</span></p>
-
-                                            <div className="flex gap-4 justify-center">
-                                                <button onClick={() => setBookingStep('court')} className="px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs border border-white/10 text-white hover:bg-white/5 transition-all">Cancel</button>
-                                                <button
-                                                    onClick={async () => {
-                                                        setBookingStep('payment');
-                                                        try {
-                                                            const response = await fetch('https://SJR_SUPABASE_ID.supabase.co/functions/v1/create-yoco-checkout', {
-                                                                method: 'POST',
-                                                                headers: { 'Content-Type': 'application/json' },
-                                                                body: JSON.stringify({
-                                                                    court: selectedCourt,
-                                                                    time: selectedTime,
-                                                                    date: selectedDate?.iso,
-                                                                    sport: activeSport,
-                                                                    userId: isLoggedIn ? 'elite-user-123' : null,
-                                                                    userEmail: isLoggedIn ? userProfile.email : 'anonymous@example.com',
-                                                                    amount: calculatePrice() * 100 // Cents
-                                                                })
-                                                            });
-                                                            const data = await response.json();
-                                                            if (data.redirectUrl) {
-                                                                window.location.href = data.redirectUrl;
-                                                            } else {
-                                                                throw new Error(data.error || 'Failed to initialize checkout');
+                                            <div className="booking-sticky-bar flex flex-col gap-4">
+                                                <div className="flex gap-3">
+                                                    <button
+                                                        onClick={() => setBookingStep('court')}
+                                                        className="flex-1 bg-white/5 border-2 border-white/5 text-white py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-all active:scale-95"
+                                                    >
+                                                        ← Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={async () => {
+                                                            setBookingStep('payment');
+                                                            try {
+                                                                const response = await fetch('https://SJR_SUPABASE_ID.supabase.co/functions/v1/create-yoco-checkout', {
+                                                                    method: 'POST',
+                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                    body: JSON.stringify({
+                                                                        court: selectedCourt,
+                                                                        time: selectedTime,
+                                                                        date: selectedDate?.iso,
+                                                                        sport: activeSport,
+                                                                        userId: isLoggedIn ? 'elite-user-123' : null,
+                                                                        userEmail: isLoggedIn ? userProfile.email : 'guest@queenswood.co.za',
+                                                                        amount: calculatePrice() * 100
+                                                                    })
+                                                                });
+                                                                const data = await response.json();
+                                                                if (data.redirectUrl) {
+                                                                    window.location.href = data.redirectUrl;
+                                                                } else {
+                                                                    throw new Error(data.error || 'Failed to initialize checkout');
+                                                                }
+                                                            } catch (err) {
+                                                                console.error(err);
+                                                                setCheckoutStatus('failure');
                                                             }
-                                                        } catch (err) {
-                                                            console.error(err);
-                                                            setCheckoutStatus('failure');
-                                                        }
-                                                    }}
-                                                    className="bg-lime-400 text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-[0_20px_40px_rgba(163,230,53,0.3)] active:scale-95"
-                                                >
-                                                    Confirm & Pay
-                                                </button>
+                                                        }}
+                                                        className="flex-[3] bg-lime-400 text-black py-6 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-[1.02] transition-all shadow-[0_20px_40px_rgba(163,230,53,0.3)] active:scale-95"
+                                                    >
+                                                        Confirm & Pay via Yoco
+                                                    </button>
+                                                </div>
+                                                <div className="flex items-center justify-center gap-2 opacity-60">
+                                                    <span className="text-sm">🔒</span>
+                                                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-500">Secure Payments via <span className="text-white">Yoco</span> · SnapScan</p>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
 
                                     {bookingStep === 'payment' && (
-                                        <div className="animate-modern py-20">
+                                        <div className="animate-modern py-20 slide-in">
                                             {!checkoutStatus ? (
                                                 <div className="flex flex-col items-center">
-                                                    <div className="w-16 h-16 border-4 border-lime-400/20 border-t-lime-400 rounded-full animate-spin mb-8"></div>
-                                                    <h3 className="text-2xl font-black uppercase tracking-widest italic animate-pulse">Redirecting to Yoco...</h3>
-                                                    <p className="text-slate-500 mt-4 text-[10px] font-black uppercase tracking-[0.2em]">Please do not refresh your browser</p>
+                                                    <div className="w-20 h-20 border-8 border-lime-400/10 border-t-lime-400 rounded-full animate-spin mb-10 shadow-[0_0_40px_rgba(163,230,53,0.2)]"></div>
+                                                    <h3 className="text-3xl font-black uppercase tracking-widest italic animate-pulse text-white">Redirecting</h3>
+                                                    <p className="text-slate-500 mt-6 text-[10px] font-black uppercase tracking-[0.3em]">SECURE CHECKOUT BY YOCO</p>
                                                 </div>
                                             ) : (
-                                                <div className="flex flex-col items-center relative" onMouseEnter={createParticles}>
-                                                    <div className="w-20 h-20 bg-lime-400 rounded-full flex items-center justify-center text-black text-4xl mb-8 animate-bounce relative z-10">✓</div>
-                                                    <h3 className="text-4xl font-black uppercase tracking-tighter italic mb-4 relative z-10">Payment Successful</h3>
-                                                    <p className="text-slate-400 text-lg mb-10">Your court is locked and loaded. See you on the court!</p>
-                                                    <button onClick={() => { setBookingStep('time'); setCheckoutStatus(null); setSelectedTime(null); setSelectedCourt(null); }} className="bg-white text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all">Back to Home</button>
+                                                <div className="flex flex-col items-center relative py-10" ref={el => el && !el.dataset.particles && (el.dataset.particles = 'true', createParticles({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 3 }))}>
+                                                    <div className="w-24 h-24 bg-lime-400 rounded-full flex items-center justify-center text-black text-5xl mb-10 animate-bounce relative z-10 shadow-[0_0_60px_rgba(163,230,53,0.5)]">✓</div>
+                                                    <h3 className="text-5xl font-black uppercase tracking-tighter italic mb-6 relative z-10 text-white">Victory!</h3>
+                                                    <p className="text-slate-400 text-xl font-medium mb-12 max-w-sm">Your court is locked. Get ready to show them what you've got!</p>
+                                                    <button onClick={() => { setBookingStep('time'); setCheckoutStatus(null); setSelectedTime(null); setSelectedCourt(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="bg-white text-black px-12 py-6 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-2xl active:scale-95">Back to Home</button>
                                                 </div>
                                             )}
                                         </div>
@@ -1479,11 +1807,11 @@
                                     <p className="text-slate-400 text-lg leading-relaxed max-w-md font-medium">
                                         Pretoria's premier destination for tennis and pickleball since the 1950s. World-class facilities, expert coaching, and a welcoming community.
                                     </p>
-                                    <div className="mt-12 flex gap-8 items-center">
-                                        <a href="https://chat.whatsapp.com/CTpHQ5R5OV01k0pBfxYE8Q" target="_blank" className="bg-lime-400/10 hover:bg-lime-400/20 border border-lime-400/20 p-4 rounded-2xl transition-all group flex items-center gap-3">
-                                            <span className="text-xl">💬</span>
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-lime-400 group-hover:tracking-[0.2em] transition-all">Join WhatsApp Community</span>
-                                        </a>
+                                    <div className="mt-12 flex gap-8 grayscale opacity-50">
+                                        {/* Social Links would go here */}
+                                        <div className="w-6 h-6 bg-white/20 rounded-full"></div>
+                                        <div className="w-6 h-6 bg-white/20 rounded-full"></div>
+                                        <div className="w-6 h-6 bg-white/20 rounded-full"></div>
                                     </div>
                                 </div>
 
@@ -1539,12 +1867,74 @@
                             </div>
                         </div>
                     )}
-                                    <button type="submit" className="w-full bg-lime-400 text-black py-6 rounded-3xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-2xl shadow-lime-400/20">Submit Registration →</button>
-                                </form>
+
+                    {/* ── Sign-In Modal ──────────────────────────────────────────── */}
+                    {showSignInModal && (
+                        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-modern">
+                            <div className="bg-slate-900 w-full max-w-md rounded-[2.5rem] sm:rounded-[3rem] border border-white/10 p-8 sm:p-10 relative shadow-2xl">
+                                <button onClick={() => { setShowSignInModal(false); setSignInForBooking(false); }} className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors">
+                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                                <div className="text-center mb-8">
+                                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-lime-400 p-0.5 mx-auto mb-6">
+                                        <div className="w-full h-full rounded-[14px] bg-slate-900 flex items-center justify-center text-3xl">🎾</div>
+                                    </div>
+                                    <h3 className="text-2xl sm:text-3xl font-black uppercase italic tracking-tighter mb-2">
+                                        {signInForBooking ? 'Sign In to Book' : 'Welcome Back'}
+                                    </h3>
+                                    <p className="text-slate-500 text-[10px] uppercase tracking-widest font-black">
+                                        {signInForBooking ? 'Sign in to access member rates & pay via Yoco' : 'Queenswood Sports Club Member Portal'}
+                                    </p>
+                                </div>
+
+                                {/* Google Sign-In */}
+                                <button
+                                    onClick={() => {
+                                        /* Google Sign-In placeholder — client will provide key */
+                                        alert('Google Sign-In: Your client will provide the Google Client ID. Integrate via https://developers.google.com/identity');
+                                    }}
+                                    className="w-full flex items-center justify-center gap-3 bg-white text-black py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-100 transition-all mb-4 shadow-xl"
+                                >
+                                    <svg className="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" /><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" /><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" /><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" /></svg>
+                                    Sign in with Google
+                                </button>
+
+                                <div className="flex items-center gap-4 my-6">
+                                    <div className="flex-1 h-px bg-white/10"></div>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-600">or</span>
+                                    <div className="flex-1 h-px bg-white/10"></div>
+                                </div>
+
+                                {/* Demo Sign-In */}
+                                <button
+                                    onClick={() => {
+                                        setIsLoggedIn(true);
+                                        setShowSignInModal(false);
+                                        setSignInForBooking(false);
+                                        setIsProfileOpen(true);
+                                    }}
+                                    className="w-full bg-gradient-to-r from-blue-600 to-lime-500 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:scale-[1.02] transition-all shadow-xl shadow-blue-500/20 mb-4"
+                                >
+                                    🎾 Demo: Queenswood Pro Card
+                                </button>
+
+                                <p className="text-center text-slate-600 text-[8px] font-black uppercase tracking-widest mt-4">
+                                    {signInForBooking ? 'Payment via Yoco · Secure checkout' : 'Your analytics, match history & court booking'}
+                                </p>
+
+                                {signInForBooking && (
+                                    <div className="mt-6 p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
+                                        <span className="text-lg">💳</span>
+                                        <div>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-white">Yoco Secure Payments</p>
+                                            <p className="text-[8px] text-slate-500 font-bold">South African card payments · EFT · SnapScan</p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
-                </div >
+                </div>
             );
         }
 
