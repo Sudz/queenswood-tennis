@@ -1215,7 +1215,8 @@
                                         <div className="scanline-overlay"></div>
                                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-lime-400 rounded-t-full z-10"></div>
 
-                                        <div className="flex flex-col sm:flex-row justify-between items-start gap-6 sm:gap-4 mb-8 lg:mb-12">
+                                        {/* Header: Player Info + Rank */}
+                                        <div className="flex flex-col sm:flex-row justify-between items-start gap-6 sm:gap-4 mb-6 lg:mb-8">
                                             <div className="flex items-center gap-4">
                                                 <div className="relative">
                                                     <img src="bash-omar.jpg" className="w-16 h-16 lg:w-20 lg:h-20 rounded-2xl lg:rounded-3xl object-cover border-2 border-white/10 grayscale group-hover:grayscale-0 transition-all duration-700 aspect-square" alt="Bash Omar" />
@@ -1223,38 +1224,93 @@
                                                 </div>
                                                 <div>
                                                     <h4 className="font-black text-2xl uppercase tracking-tighter text-white">Bash Omar</h4>
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-lime-400">Queenswood Pro Elite</p>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-lime-400">Dual-Sport Elite</p>
+                                                    <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">Member Since 2023</p>
                                                 </div>
                                             </div>
                                             <div className="text-left sm:text-right w-full sm:w-auto mt-2 sm:mt-0 pt-4 sm:pt-0 border-t border-white/10 sm:border-0">
                                                 <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Queenswood Pro Rank</div>
                                                 <div className="text-2xl lg:text-3xl font-black italic text-lime-400 tracking-tighter">#04</div>
-                                            </div>
-                                        </div>
-
-                                        {/* Player Stats Grid */}
-                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-8 lg:mb-12">
-                                            {[
-                                                { l: 'Win Rate', v: '89%', c: 'text-blue-400' },
-                                                { l: 'Serve Speed', v: '194km/h', c: 'text-white' },
-                                                { l: 'Accuracy', v: '92%', c: 'text-lime-400' },
-                                                { l: 'Pro Rank', v: '#04', c: 'text-white' }
-                                            ].map(s => (
-                                                <div key={s.l} className="p-4 rounded-2xl bg-white/5 border border-white/5 group-hover:bg-white/10 transition-all">
-                                                    <div className="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">{s.l}</div>
-                                                    <div className={`text-xl font-black italic ${s.c}`}>{s.v}</div>
+                                                <div className="flex items-center gap-1 mt-1 sm:justify-end">
+                                                    <span className="text-[8px] font-black text-green-400 uppercase">▲ 2 this month</span>
                                                 </div>
-                                            ))}
+                                            </div>
                                         </div>
 
-                                        <div className="p-6 lg:p-8 rounded-[1.5rem] lg:rounded-[2.5rem] bg-gradient-to-br from-blue-600/20 to-lime-400/20 border border-white/10 backdrop-blur-3xl">
-                                            <div className="flex flex-col xl:flex-row xl:justify-between items-start xl:items-center gap-3 xl:gap-0 mb-4 xl:mb-6">
+                                        {/* Sport Tabs */}
+                                        {(() => {
+                                            const [cardSport, setCardSport] = React.useState('tennis');
+                                            const tennisStats = [
+                                                { l: 'UTR Rating', v: '6.42', c: 'text-blue-400' },
+                                                { l: 'W / L', v: '34-8', c: 'text-white' },
+                                                { l: 'Win %', v: '81%', c: 'text-lime-400' },
+                                                { l: 'Aces / Set', v: '3.2', c: 'text-blue-400' },
+                                                { l: '1st Serve %', v: '67%', c: 'text-white' },
+                                                { l: 'Break Pts Won', v: '48%', c: 'text-lime-400' },
+                                            ];
+                                            const pickleballStats = [
+                                                { l: 'DUPR Rating', v: '4.15', c: 'text-lime-400' },
+                                                { l: 'W / L', v: '22-5', c: 'text-white' },
+                                                { l: 'Win %', v: '81%', c: 'text-blue-400' },
+                                                { l: 'Dinks Won', v: '74%', c: 'text-lime-400' },
+                                                { l: '3rd Shot Drop', v: '62%', c: 'text-white' },
+                                                { l: 'Avg Rally Len', v: '8.4', c: 'text-blue-400' },
+                                            ];
+                                            const tennisForm = ['W','W','L','W','W','W','L','W'];
+                                            const pickleballForm = ['W','W','W','W','L','W','W','W'];
+                                            const stats = cardSport === 'tennis' ? tennisStats : pickleballStats;
+                                            const form = cardSport === 'tennis' ? tennisForm : pickleballForm;
+                                            return (
+                                                <>
+                                                    <div className="flex gap-2 p-1 bg-white/5 rounded-2xl border border-white/10 mb-6 lg:mb-8">
+                                                        <button onClick={(e) => { e.stopPropagation(); setCardSport('tennis'); }}
+                                                            className={`flex-1 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all duration-500 ${cardSport === 'tennis' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'text-slate-500 hover:text-white'}`}>
+                                                            🎾 Tennis
+                                                        </button>
+                                                        <button onClick={(e) => { e.stopPropagation(); setCardSport('pickleball'); }}
+                                                            className={`flex-1 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all duration-500 ${cardSport === 'pickleball' ? 'bg-lime-400 text-black shadow-lg shadow-lime-400/30' : 'text-slate-500 hover:text-white'}`}>
+                                                            🏓 Pickleball
+                                                        </button>
+                                                    </div>
+
+                                                    {/* Stats Grid */}
+                                                    <div className="grid grid-cols-3 gap-2 lg:gap-3 mb-6 lg:mb-8">
+                                                        {stats.map(s => (
+                                                            <div key={s.l} className="p-3 lg:p-4 rounded-xl lg:rounded-2xl bg-white/5 border border-white/5 group-hover:bg-white/10 transition-all">
+                                                                <div className="text-[7px] lg:text-[8px] font-black uppercase tracking-widest text-slate-500 mb-1">{s.l}</div>
+                                                                <div className={`text-lg lg:text-xl font-black italic ${s.c}`}>{s.v}</div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* Recent Form */}
+                                                    <div className="flex items-center justify-between mb-6 lg:mb-8 p-4 rounded-2xl bg-white/5 border border-white/5">
+                                                        <div>
+                                                            <div className="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-2">Recent Form</div>
+                                                            <div className="flex gap-1.5">
+                                                                {form.map((r, i) => (
+                                                                    <span key={i} className={`w-6 h-6 rounded-md flex items-center justify-center text-[9px] font-black ${r === 'W' ? 'bg-lime-400/20 text-lime-400 border border-lime-400/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+                                                                        {r}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-1">Streak</div>
+                                                            <div className="text-xl font-black italic text-lime-400">🔥 {cardSport === 'tennis' ? '3W' : '4W'}</div>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            );
+                                        })()}
+
+                                        {/* Matchmaking CTA */}
+                                        <div className="p-5 lg:p-6 rounded-[1.5rem] lg:rounded-[2rem] bg-gradient-to-br from-blue-600/20 to-lime-400/20 border border-white/10 backdrop-blur-3xl">
+                                            <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-3 mb-4">
                                                 <span className="text-[10px] font-black uppercase tracking-widest text-white">Find a Practice Partner</span>
-                                                <span className="flex items-center gap-2 text-[8px] font-black text-lime-400 uppercase tracking-widest xl:pl-4 xl:text-right w-full xl:w-auto border-t border-white/10 xl:border-0 pt-3 xl:pt-0">
-                                                    Recent Performances
-                                                </span>
+                                                <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">UTR 6.42 · DUPR 4.15</span>
                                             </div>
-                                            <p className="text-sm font-bold text-slate-300 mb-6 leading-relaxed">Match with players at UTR 6.42 - 7.0 for a competitive session.</p>
+                                            <p className="text-sm font-bold text-slate-300 mb-5 leading-relaxed">Match with players at similar ratings for a competitive session.</p>
                                             <button onClick={() => setRegMode('league')} className="w-full bg-white text-black py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-lime-400 transition-colors shadow-2xl active:scale-95">Start Matchmaking</button>
                                         </div>
 
